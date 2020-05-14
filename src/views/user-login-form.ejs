@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- Include Head -->
+<%- include('partials/head', {title: 'Registro', image: ''}) %>
+
+<body>
+	<!-- Header -->
+	<%- include('partials/headerNavbar') %>
+	<!-- /Header -->
+
+	<div class="container products-wrapper">
+		<div class="row">
+			<div class="col-12">
+				<h2 class="products-title">Registro</h2>
+			</div>
+		</div>
+		<div class="col-12">
+			<form action="/products/edit/" method="POST">
+				<div class="row product-detail">
+					<div class="col-12">
+						<label for="email" class="form-label">Email:</label>
+						<input type="text" id="email" name="email" placeholder="Ej: gonza@dh.com" class="form-input">
+					</div>
+					<div class="col-12">
+						<label for="price" class="form-label">Contraseña:</label>
+						<input type="password" id="password" name="password" class="form-input">
+					</div>
+					<div class="col-12">
+						<button type="submit" class="buy-now-button">Registrate</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+	</div>
+	<!-- /todos los productos -->
+
+	<!-- footer -->
+	<%- include('partials/footer') %>
+	<!-- /footer -->
+</body>
+
+</html>

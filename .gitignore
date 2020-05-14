@@ -43,5 +43,6 @@ Thumbs.db
 .htaccess
 *.config
 node_modules/
+data/
 .vscode/
-.pdf
+*.pdf
