@@ -36,16 +36,19 @@
 			</ul>
 
 			<ul class="right-navbar">
+				<% if(locals.user && user){ %> 
+					<li><a href="#">Mis compras <i class="fas fa-shopping-basket"></i></a></li>
+					<li>
+						<form action="/users/logout" method="POST">
+							<button class="logout" type="submit">
+								Cerrar sesión <i class="fas fa-sign-in-alt"></i>
+							</button>
+						</form>
+					</li>
+				<% } else { %>
 				<li><a href="/users/register">Creá tu cuenta <i class="far fa-address-card"></i></a></li>
 				<li><a href="/users/login">Ingresá <i class="fas fa-sign-in-alt"></i></a></li>
-				<li><a href="#">Mis compras <i class="fas fa-shopping-basket"></i></a></li>
-				<li>
-					<form action="/users/logout" method="post">
-						<button class="logout">
-							<a href="/users/login">Cerrar sesión <i class="fas fa-sign-in-alt"></i></a>
-						</button>
-					</form>
-				</li>
+				<% } %>
 			</ul>
 		</nav>
 	</div>

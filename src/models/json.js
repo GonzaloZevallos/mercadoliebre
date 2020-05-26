@@ -35,11 +35,13 @@ module.exports = (name) => {
       },
 
       findBySomething (callback) {
-         return this.getAll().find(callback);
+         return this.getAll()
+                  .find(callback);
       },
 
       filterBySomething (callback) {
-         return this.getAll().filter(callback);
+         return this.getAll()
+                  .filter(callback);
       },
 
       destroy (id) {

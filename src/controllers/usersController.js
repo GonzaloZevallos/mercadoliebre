@@ -1,5 +1,5 @@
 const jsonModel = require('../models/json');
-const usersModel = jsonModel('users');
+const userModel = jsonModel('users');
 const userTokenModel = jsonModel('userToken');
 const bycrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -10,7 +10,7 @@ module.exports = {
    // Root - Show all users
    index (req, res) {
       
-      const users = usersModel.getAll();
+      const users = userModel.getAll();
 
       return res.render('users/users', { users });
    },
@@ -18,7 +18,7 @@ module.exports = {
    // Profile - Profile from one user
    profile (req, res) {
       
-      const user = usersModel.findByPK(req.params.id);
+      const user = userModel.findByPK(req.params.id);
 
       return res.render('users/detail', { user });
    },
@@ -42,7 +42,7 @@ module.exports = {
          image: req.file ? req.file.filename : 'default-image.png'
       };
 
-      usersModel.save(newUser);
+      userModel.save(newUser);
 
       return res.redirect('/users/login/');
    },
@@ -54,7 +54,7 @@ module.exports = {
 
    processLogin (req, res) {
 
-      const user = usersModel.findBySomething(e => e.email == req.body.email);
+      const user = userModel.findBySomething(e => e.email == req.body.email);
 
       if(user){
 
@@ -63,24 +63,24 @@ module.exports = {
             //Logueo al usuario
             delete user.password;
             req.session.user = user;
-
+            res.locals.user = req.session.user;
+            console.log(2)
             //Recuerdo al usuario si puso "Recuérdame"
             if(req.body.remember){
 
                // https://stackoverflow.com/questions/8855687/secure-random-token-in-node-js
                const token = crypto.randomBytes(64).toString('base64');
                // Creo la cookie por 3 meses
-               res.cookie('rememberToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
+               res.cookie('userToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
                userTokenModel.save({userId: user.id, token});
             }
-
             return res.redirect('/');        
          }
 
          return res.send('Credenciales inválidas.');
-      } else {
-         return res.send('Credenciales inválidas (email).');
       }
+
+      return res.send('Credenciales inválidas (email).');
 
    },
 
@@ -90,7 +90,7 @@ module.exports = {
       req.session.destroy();
 
       //Borro la cookie
-      req.clearCookie('userToken');
+      res.clearCookie('userToken');
 
       return res.redirect('/');
    },
@@ -98,7 +98,7 @@ module.exports = {
    // Update - Form to edit
    edit (req, res) {
       
-      const user = usersModel.findByPK(req.params.id);
+      const user = userModel.findByPK(req.params.id);
 
       return res.render('user-edit-form', { user });
    },
@@ -106,7 +106,7 @@ module.exports = {
    update (req, res) {
       
 
-      usersModel.update(req.body, req.req.params.id);
+      userModel.update(req.body, req.req.params.id);
 
       return res.redirect('/user/profile/' + req.params.id);
 
@@ -115,7 +115,7 @@ module.exports = {
    // Delete - Delete one user from DB
    destroy (req, res) {
       
-      usersModel.destroy(req.params.id);
+      userModel.destroy(req.params.id);
 
       return res.redirect('/');
    }
