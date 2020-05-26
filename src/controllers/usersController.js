@@ -1,14 +1,20 @@
+const bycrypt = require('bcryptjs');
+const crypto = require('crypto');
+const { validationResult } = require('express-validator');
+
+// ********* Models ************
+
 const jsonModel = require('../models/json');
 const userModel = jsonModel('users');
 const userTokenModel = jsonModel('userToken');
 const productModel = jsonModel('products');
-const bycrypt = require('bcryptjs');
-const crypto = require('crypto');
+
+// ********* Helpers ***********
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 module.exports = {
-   // Root - Show all users
+   // Index - Show all users
    index (req, res) {
       
       const users = userModel.getAll();
@@ -32,6 +38,10 @@ module.exports = {
 
    // Store -  Method to store
    store (req, res) {
+
+      const errors = validationResult(req);
+
+      return res.send(errors)
 
       const user = req.body;
       delete user.retype;
@@ -90,7 +100,6 @@ module.exports = {
       req.session.destroy();
 
       //Borro la cookie
-      console.log(req.cookies.userToken)
       const userToken = userTokenModel.findBySomething(e => e.token == req.cookies.userToken);
       if(userToken){
          userTokenModel.destroy(userToken.id);

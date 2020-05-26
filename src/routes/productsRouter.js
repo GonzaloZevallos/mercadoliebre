@@ -7,6 +7,7 @@ const path = require('path');
 // ************ Middlewares ************
 
 const authMiddleware = require('../middlewares/auth');
+const sellerMiddleware = require('../middlewares/seller');
 
 // ************ Controller Require ************
 
@@ -36,10 +37,10 @@ router.get('/create', authMiddleware, productsController.create); /* GET - Form 
 router.post('/', upload.single('image'), productsController.store); /* POST - Store in DB - store*/
 
 /*** EDIT ONE PRODUCT ***/ 
-router.get('/:id/edit', productsController.edit); /* GET - Form to create - edit */
-router.put('/:id', productsController.update); /* PUT - Update in DB - update*/
+router.get('/:id/edit', sellerMiddleware, productsController.edit); /* GET - Form to create - edit */
+router.put('/:id', sellerMiddleware, productsController.update); /* PUT - Update in DB - update*/
 
 /*** DELETE ONE PRODUCT***/ 
-router.delete('/:id', productsController.destroy); /* DELETE - Delete from DB - destroy */
+router.delete('/:id', sellerMiddleware, productsController.destroy); /* DELETE - Delete from DB - destroy */
 
 module.exports = router;
