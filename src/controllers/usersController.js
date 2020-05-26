@@ -1,77 +1,122 @@
 const jsonModel = require('../models/json');
-const usersModel = new jsonModel('users');
+const usersModel = jsonModel('users');
+const userTokenModel = jsonModel('userToken');
+const bycrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 module.exports = {
    // Root - Show all users
-   root(req, res) {
-      // Do the magic
-      let users = usersModel.getAll();
+   index (req, res) {
+      
+      const users = usersModel.getAll();
 
-      res.render('users', { users });
+      return res.render('users/users', { users });
    },
 
    // Profile - Profile from one user
-   profile(req, res) {
-      // Do the magic
-      let user = usersModel.findByPK(req.params.userId);
+   profile (req, res) {
+      
+      const user = usersModel.findByPK(req.params.id);
 
-      res.render('detail', { user });
+      return res.render('users/detail', { user });
    },
 
    // Create - Form to create
-   create(req, res) {
-      // Do the magic
-      res.render('user-register-form');
+   create (req, res) {
+      
+      return res.render('users/user-register-form');
    },
 
    // Store -  Method to store
-   store(req, res) {
-      // Do the magic
+   store (req, res) {
 
-      let newUser = {
-         ...req.body,
-         image: req.files ? req.files[0] : 'default-image.png'
+      const user = req.body;
+      delete user.retype;
+      user.password = bycrypt.hashSync(user.password, 10);
+
+
+      const newUser = {
+         ...user,
+         image: req.file ? req.file.filename : 'default-image.png'
       };
 
       usersModel.save(newUser);
 
-      // Will be change when we use session & cookies
-      res.redirect('/user/profile/' + usersModel.getLast().id);
+      return res.redirect('/users/login/');
    },
 
    // Login - Form to login
    showLogin (req, res) {
-      res.render('user-login-form');
+      return res.render('users/user-login-form');
    },
 
-   processLogin () {
+   processLogin (req, res) {
 
+      const user = usersModel.findBySomething(e => e.email == req.body.email);
+
+      if(user){
+
+         if(bycrypt.compareSync(req.body.password, user.password)){
+
+            //Logueo al usuario
+            delete user.password;
+            req.session.user = user;
+
+            //Recuerdo al usuario si puso "Recuérdame"
+            if(req.body.remember){
+
+               // https://stackoverflow.com/questions/8855687/secure-random-token-in-node-js
+               const token = crypto.randomBytes(64).toString('base64');
+               // Creo la cookie por 3 meses
+               res.cookie('rememberToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
+               userTokenModel.save({userId: user.id, token});
+            }
+
+            return res.redirect('/');        
+         }
+
+         return res.send('Credenciales inválidas.');
+      } else {
+         return res.send('Credenciales inválidas (email).');
+      }
+
+   },
+
+   logout (req, res) {
+      
+      // Borro la session
+      req.session.destroy();
+
+      //Borro la cookie
+      req.clearCookie('userToken');
+
+      return res.redirect('/');
    },
 
    // Update - Form to edit
-   edit(req, res) {
-      // Do the magic
-      let user = usersModel.findByPK(req.params.userId);
+   edit (req, res) {
+      
+      const user = usersModel.findByPK(req.params.id);
 
-      res.render('user-edit-form', { user });
+      return res.render('user-edit-form', { user });
    },
    // Update - Method to update
-   update(req, res) {
-      // Do the magic
+   update (req, res) {
+      
 
-      usersModel.update(req.body, req.req.params.userId);
+      usersModel.update(req.body, req.req.params.id);
 
-      res.redirect('/user/profile/' + req.params.userId);
+      return res.redirect('/user/profile/' + req.params.id);
 
    },
 
    // Delete - Delete one user from DB
-   destroy(req, res) {
-      // Do the magic
-      usersModel.destroy(req.params.userId);
+   destroy (req, res) {
+      
+      usersModel.destroy(req.params.id);
 
-      res.redirect('/');
+      return res.redirect('/');
    }
 }

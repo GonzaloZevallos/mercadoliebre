@@ -1,10 +1,10 @@
 const jsonModel = require('../models/json');
-const productsModel = new jsonModel('products');
+const productsModel = jsonModel('products');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 module.exports = {
-	root (req, res) {
+	root: function (req, res){
 		let visited = productsModel.filterBySomething(e => e.category == 'visited');
 		let inSale = productsModel.filterBySomething(e => e.category == 'in-sale');
 

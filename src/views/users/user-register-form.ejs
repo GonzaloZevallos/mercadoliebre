@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- Include Head -->
+<%- include('../partials/head', {title: 'Registro', image: ''}) %>
+<body>
+	<!-- Header -->
+	<%- include('../partials/headerNavbar') %>
+	<!-- /Header -->
+
+	<div class="container products-wrapper">
+		<div class="row justify-content-center">
+			<div class="col-12">
+				<h2 class="products-title">Registro</h2>
+			</div>
+			<div class="col-6">
+				<form action="/users" method="POST" enctype="multipart/form-data">
+					<div class="row product-detail">
+						<div class="col-12">
+							<label for="email" class="form-label">Email:</label>
+							<input type="text" id="email" name="email" placeholder="Ej: gonza@dh.com" class="form-input">
+						</div>
+						<div class="col-12 row">
+							<label for="image" class="form-label col-12">Avatar:</label>
+							<input type="file" id="image" name="image" class="form-file col-12">
+						</div>
+						<div class="col-12">
+							<label for="password" class="form-label">Contraseña:</label>
+							<input type="password" id="password" name="password" class="form-input">
+						</div>
+						<div class="col-12">
+							<label for="retype" class="form-label">Repite la contraseña:</label>
+							<input type="password" id="retype" name="retype" class="form-input">
+						</div>
+						<div class="col-12 mt-5">
+							<button type="submit" class="buy-now-button">Registrate</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+	</div>
+	<!-- /todos los productos -->
+
+	<!-- footer -->
+	<%- include('../partials/footer') %>
+	<!-- /footer -->
+</body>	
+</html>

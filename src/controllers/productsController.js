@@ -1,65 +1,58 @@
 const jsonModel = require('../models/json');
-const productsModel = new jsonModel('products');
+const productsModel = jsonModel('products');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 module.exports = {
 	// Root - Show all products
-	root (req, res) {
-		// Do the magic
-		let products = productsModel.getAll();
-		res.render('products', { products, toThousand });
+	index (req, res) {
+		const products = productsModel.getAll();
+		return res.render('products/products', { products, toThousand });
 	},
 
 	// Detail - Detail from one product
 	detail (req, res) {
-		// Do the magic
-		let product = productsModel.findByPK(req.params.productId);
-		res.render('detail', { product, toThousand });
+		const product = productsModel.findByPK(req.params.id);
+		return res.render('products/detail', { product, toThousand });
 	},
 
 	// Create - Form to create
 	create (req, res) {
-		// Do the magic
-		res.render('product-create-form');
+		return res.render('products/product-create-form');
 	},
 	
 	// Create -  Method to store
 	store (req, res) {
-		// Do the magic
 
-		let newProduct = {
+		const newProduct = {
 			...req.body,
 			image: req.files ? req.files[0] : 'default-image.png'
 		};
 
 		productsModel.save(newProduct);
 
-		res.redirect('/products/detail/' + productsModel.getLast().id);
+		return res.redirect('/products/detail/' + productsModel.getLast().id);
 	},
 
 	// Update - Form to edit
 	edit (req, res) {
-		// Do the magic
-		let product = productsModel.findByPK(req.params.productId);
+		const product = productsModel.findByPK(req.params.id);
 
-		res.render('product-edit-form', { product, toThousand });
+		return res.render('products/product-edit-form', { product, toThousand });
 	},
 	// Update - Method to update
 	update (req, res) {
-		// Do the magic
 
-		productsModel.update(req.body, req.req.params.productId);
+		productsModel.update(req.body, req.req.params.id);
 
-		res.redirect('/products/detail/' + req.params.productId);
+		return res.redirect('/products/detail/' + req.params.id);
 
 	},
 
 	// Delete - Delete one product from DB
 	destroy (req, res) {
-		// Do the magic
-		productsModel.destroy(req.params.productId);
+		productsModel.destroy(req.params.id);
 
-		res.redirect('/products');
+		return res.redirect('/products');
 	}
 }

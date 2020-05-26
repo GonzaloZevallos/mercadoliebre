@@ -132,12 +132,17 @@ hr {
   font-size: 1.5em;
 }
 
+.logout{
+  background: transparent;
+  border: 0px;
+}
 .left-navbar a,
 .right-navbar a {
   display: block;
   padding: 5px 0;
   border-bottom: solid 1px var(--gray);
 }
+
 
 
 /*====== Banner ======*/

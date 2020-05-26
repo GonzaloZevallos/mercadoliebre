@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <!-- Include Head -->
-<%- include('partials/head', {title: 'Editando: ' + product.name, image: product.image}) %>
+<%- include('../partials/head', {title: 'Formulario de creación', image: ''}) %>
 <body>
 	<!-- Header -->
-	<%- include('partials/headerNavbar') %>
+	<%- include('../partials/headerNavbar') %>
 	<!-- /Header -->
 
 	<div class="container products-wrapper">
 		<div class="row">
 			<div class="col-12">
-				<h2 class="products-title">Estás editando: <i><%= product.name %></i></h2>
+				<h2 class="products-title">Formulario de creación de productos</h2>
 			</div>
 		</div>
 		<div class="col-12">
-			<form action="/products/edit/<%= product.id %>?_method=PUT" method="POST">
+			<form action="/products/" method="POST" enctype="multipart/form-data">
 				<div class="row product-detail">
 					<div class="col-12 col-md-6">
 						<label for="name" class="form-label">Nombre del producto:</label>
@@ -23,6 +23,10 @@
 					<div class="col-12 col-md-6">
 						<label for="price" class="form-label">Precio del producto:</label>
 						<input type="text" id="price" name="price" placeholder="Ej: 5678" class="form-input">
+					</div>
+					<div class="col-12 row">
+						<label for="image" class="form-label col-12">Image:</label>
+						<input type="file" id="image" name="image" class="form-file col-12">
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="discount" class="form-label">Descuento:</label>
@@ -33,12 +37,12 @@
 						<select name="category" id="category" class="form-input">
 							<option value="">Elegí</option>
 							<option value="in-sale">En oferta</option>
-							<option value="visited" >Últimos agregados</option>
+							<option value="visited">Últimos agregados</option>
 						</select>
 					</div>
 					<div class="col-12">
 						<label for="description" class="form-label">Descipción:</label>
-						<textarea name="description" id="description" class="form-input"><%= product.description %></textarea>
+						<textarea name="description" id="description" class="form-input"></textarea>
 					</div>
 					<div class="col-12">
 						<button type="submit" class="buy-now-button">Guardar producto</button>
@@ -51,7 +55,7 @@
 	<!-- /todos los productos -->
 
 	<!-- footer -->
-	<%- include('partials/footer') %>
+	<%- include('../partials/footer') %>
 	<!-- /footer -->
 </body>	
 </html>
