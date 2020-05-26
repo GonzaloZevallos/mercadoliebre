@@ -1,6 +1,7 @@
 const jsonModel = require('../models/json');
 const userModel = jsonModel('users');
 const userTokenModel = jsonModel('userToken');
+const productModel = jsonModel('products');
 const bycrypt = require('bcryptjs');
 const crypto = require('crypto');
 
@@ -18,7 +19,9 @@ module.exports = {
    // Profile - Profile from one user
    profile (req, res) {
 
-      return res.render('users/profile');
+      const products = productModel.filterBySomething(e => e.userId == req.session.user.id);
+
+      return res.render('users/profile', { products, toThousand });
    },
 
    // Create - Form to create
@@ -33,7 +36,6 @@ module.exports = {
       const user = req.body;
       delete user.retype;
       user.password = bycrypt.hashSync(user.password, 10);
-
 
       const newUser = {
          ...user,
@@ -90,8 +92,10 @@ module.exports = {
       //Borro la cookie
       console.log(req.cookies.userToken)
       const userToken = userTokenModel.findBySomething(e => e.token == req.cookies.userToken);
-      userTokenModel.destroy(userToken.id);
-      res.clearCookie('userToken');
+      if(userToken){
+         userTokenModel.destroy(userToken.id);
+         res.clearCookie('userToken');
+      }
 
       return res.redirect('/');
    },

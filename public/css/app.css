@@ -239,6 +239,10 @@ hr {
   transition: 300ms;
 }
 
+.noproducts {
+  text-align: center
+}
+
 .product-box:hover {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }

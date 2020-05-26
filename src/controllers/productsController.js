@@ -26,7 +26,8 @@ module.exports = {
 
 		const newProduct = {
 			...req.body,
-			image: req.files ? req.files[0] : 'default-image.png'
+			image: req.files ? req.files[0] : 'default-image.png',
+			userId: req.session.user.id
 		};
 
 		productsModel.save(newProduct);
