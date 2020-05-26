@@ -17,10 +17,8 @@ module.exports = {
 
    // Profile - Profile from one user
    profile (req, res) {
-      
-      const user = userModel.findByPK(req.params.id);
 
-      return res.render('users/detail', { user });
+      return res.render('users/profile');
    },
 
    // Create - Form to create
@@ -64,7 +62,7 @@ module.exports = {
             delete user.password;
             req.session.user = user;
             res.locals.user = req.session.user;
-            console.log(2)
+
             //Recuerdo al usuario si puso "Recuérdame"
             if(req.body.remember){
 

@@ -5,7 +5,7 @@ const userTokenModel = jsonModel('userToken');
 module.exports = (req, res, next) => {
 
    res.locals.user = false;
-   console.log(req.session.user)
+
    if (req.session.user) {
       res.locals.user = req.session.user;
    } else if (req.cookies.userToken){
@@ -18,6 +18,6 @@ module.exports = (req, res, next) => {
       res.locals.user = user;
    }
    
-   next();
+   return next();
 
 }
