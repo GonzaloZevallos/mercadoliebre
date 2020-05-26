@@ -31,7 +31,7 @@ module.exports = (name) => {
       findByPK (id) {
          let allData = this.getAll();
 
-         return allData.find(product => product.id == id);
+         return allData.find(row => row.id == id);
       },
 
       findBySomething (callback) {
@@ -47,7 +47,7 @@ module.exports = (name) => {
       destroy (id) {
          let allData = this.getAll();
 
-         allData = allData.filter(product => product.id != id);
+         allData = allData.filter(row => row.id != id);
 
          fs.writeFileSync(this.modelPath, JSON.stringify(allData, null, ' '));
       },

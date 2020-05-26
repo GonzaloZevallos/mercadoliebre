@@ -88,6 +88,9 @@ module.exports = {
       req.session.destroy();
 
       //Borro la cookie
+      console.log(req.cookies.userToken)
+      const userToken = userTokenModel.findBySomething(e => e.token == req.cookies.userToken);
+      userTokenModel.destroy(userToken.id);
       res.clearCookie('userToken');
 
       return res.redirect('/');
