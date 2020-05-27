@@ -44,7 +44,7 @@ module.exports = {
 	// Update - Method to update
 	update (req, res) {
 
-		productsModel.update(req.body, req.req.params.id);
+		productsModel.update({ ...req.body, userId: req.session.user.id }, req.params.id);
 
 		return res.redirect('/products/detail/' + req.params.id);
 

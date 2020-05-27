@@ -13,12 +13,13 @@
 			<div class="col-12">
 				<h2 class="products-title">Login</h2>
 			</div>
-			<div class="col-6">
+			<div class="col-6"> 
 				<form action="/users/login/" method="POST">
 					<div class="row product-detail">
 						<div class="col-12">
 							<label for="email" class="form-label">Email:</label>
-							<input type="text" id="email" name="email" placeholder="Ej: gonza@dh.com" class="form-input">
+							<input type="text" id="email" name="email" placeholder="Ej: gonza@dh.com" class="form-input" value="<%= typeof old != 'undefined' ? old.email : '' %>">
+							<p class="error"><%= typeof errors == 'undefined' ? '' : errors.email ? errors.email.msg : '' %></p>
 						</div>
 						<div class="col-12">
 							<label for="price" class="form-label">Contraseña:</label>

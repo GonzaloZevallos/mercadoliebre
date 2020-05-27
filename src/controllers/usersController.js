@@ -13,6 +13,20 @@ const productModel = jsonModel('products');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
+// const bestErrors = errors => {
+//    let newErrorObject = {};
+//    errors.forEach(e => {
+//       for (const key in e) {
+//          if (e.hasOwnProperty(key) && key == 'param') {
+//             const input = e.param
+//             newErrorObject = { ...newErrorObject, [input]: e.msg != undefined ? e.msg : '' }
+//          }
+//       }
+//    });
+
+//    return newErrorObject;
+// }
+
 module.exports = {
    // Index - Show all users
    index (req, res) {
@@ -41,20 +55,25 @@ module.exports = {
 
       const errors = validationResult(req);
 
-      return res.send(errors)
+      if(errors.isEmpty()){
 
-      const user = req.body;
-      delete user.retype;
-      user.password = bycrypt.hashSync(user.password, 10);
+         const user = req.body;
+         delete user.retype;
+         user.password = bycrypt.hashSync(user.password, 10);
+   
+         const newUser = {
+            ...user,
+            image: req.file ? req.file.filename : 'default-image.png'
+         };
+   
+         userModel.save(newUser);
+   
+         return res.redirect('/users/login/');
+      } else {
 
-      const newUser = {
-         ...user,
-         image: req.file ? req.file.filename : 'default-image.png'
-      };
+         return res.render('users/user-register-form', { errors: errors.mapped(), old: req.body });
 
-      userModel.save(newUser);
-
-      return res.redirect('/users/login/');
+      }
    },
 
    // Login - Form to login
@@ -64,33 +83,35 @@ module.exports = {
 
    processLogin (req, res) {
 
-      const user = userModel.findBySomething(e => e.email == req.body.email);
+      const errors = validationResult(req);
 
-      if(user){
+      if(errors.isEmpty()){
+         
+         const user = userModel.findBySomething(e => e.email == req.body.email);
 
-         if(bycrypt.compareSync(req.body.password, user.password)){
+         //Logueo al usuario
+         delete user.password;
+         req.session.user = user;
+         res.locals.user = req.session.user;
 
-            //Logueo al usuario
-            delete user.password;
-            req.session.user = user;
-            res.locals.user = req.session.user;
+         //Recuerdo al usuario si puso "Recuérdame"
+         if(req.body.remember){
 
-            //Recuerdo al usuario si puso "Recuérdame"
-            if(req.body.remember){
-
-               // https://stackoverflow.com/questions/8855687/secure-random-token-in-node-js
-               const token = crypto.randomBytes(64).toString('base64');
-               // Creo la cookie por 3 meses
-               res.cookie('userToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
-               userTokenModel.save({userId: user.id, token});
-            }
-            return res.redirect('/');        
+            // https://stackoverflow.com/questions/8855687/secure-random-token-in-node-js
+            const token = crypto.randomBytes(64).toString('base64');
+            // Creo la cookie por 3 meses
+            res.cookie('userToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
+            userTokenModel.save({userId: user.id, token});
          }
 
-         return res.send('Credenciales inválidas.');
+         return res.redirect('/');
+
+      } else {
+
+         return res.render('users/user-login-form', { errors: errors.mapped() , old: req.body});
       }
 
-      return res.send('Credenciales inválidas (email).');
+
 
    },
 

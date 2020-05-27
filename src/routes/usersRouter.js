@@ -27,6 +27,8 @@ var storage = multer.diskStorage({
 
 var upload = multer({
    storage: storage,
+
+   // Validate image
    fileFilter: (req, file, cb) => {
 
    
@@ -47,11 +49,11 @@ router.get('/profile/', authMiddleware, usersController.profile); /* GET - user 
 
 /*** REGISTER user ***/ 
 router.get('/register/', guestMiddleware , usersController.create); /* GET - Form to create */
-router.post('/', guestMiddleware, upload.single('image'), validator.register, usersController.store); /* POST - Store in DB */
+router.post('/register/', guestMiddleware, upload.single('image'), validator.register, usersController.store); /* POST - Store in DB */
 
 /*** LOG user ***/
 router.get('/login/', guestMiddleware, usersController.showLogin); /* GET - Form to create */
-router.post('/login/', guestMiddleware, usersController.processLogin); /* POST - Log user */
+router.post('/login/', guestMiddleware, validator.login, usersController.processLogin); /* POST - Log user */
 
 /*** LOGOUT user ***/
 

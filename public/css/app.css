@@ -417,6 +417,11 @@ hr {
   padding: 0 15px;
 }
 
+.error{
+  color: rgb(209, 0, 0);
+  font-size: 1.4em;
+}
+
 textarea.form-input {
   min-height: 140px;
   resize: vertical;
