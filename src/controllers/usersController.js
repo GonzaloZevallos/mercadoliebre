@@ -2,46 +2,29 @@ const bycrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 
-// ********* Models ************
+// ******** Sequelize ***********
 
-const jsonModel = require('../models/json');
-const userModel = jsonModel('users');
-const userTokenModel = jsonModel('userToken');
-const productModel = jsonModel('products');
-
-// ********* Helpers ***********
-
-const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-// const bestErrors = errors => {
-//    let newErrorObject = {};
-//    errors.forEach(e => {
-//       for (const key in e) {
-//          if (e.hasOwnProperty(key) && key == 'param') {
-//             const input = e.param
-//             newErrorObject = { ...newErrorObject, [input]: e.msg != undefined ? e.msg : '' }
-//          }
-//       }
-//    });
-
-//    return newErrorObject;
-// }
+const { User, Product, Token, Brand} = require('../database/models');
 
 module.exports = {
    // Index - Show all users
-   index (req, res) {
+   async index (req, res) {
       
-      const users = userModel.getAll();
+      const users = await User.findAll();
 
       return res.render('users/users', { users });
    },
 
    // Profile - Profile from one user
-   profile (req, res) {
+   async profile (req, res) {
 
-      const products = productModel.filterBySomething(e => e.userId == req.session.user.id);
+      const products = await Product.findAll({
+         where: {
+            userId: req.session.user.id
+         }
+      });
 
-      return res.render('users/profile', { products, toThousand });
+      return res.render('users/profile', { products });
    },
 
    // Create - Form to create
@@ -51,29 +34,30 @@ module.exports = {
    },
 
    // Store -  Method to store
-   store (req, res) {
-
+   async store (req, res) {
+      
       const errors = validationResult(req);
 
+      return res.send(errors)
+      
       if(errors.isEmpty()){
-
-         const user = req.body;
-         delete user.retype;
-         user.password = bycrypt.hashSync(user.password, 10);
+         
+         const _body = req.body;
+         delete _body.retype;
+         _body.password = bycrypt.hashSync(_body.password, 10);
+         _body.admin = 0;
+         _body.image = req.file ? req.file.filename : NULL
+         
+         // return res.send(_body)
+         User.create(_body)
+            .then(data => {
+               return res.redirect('/users/login/');
+            })
+            .catch(e => console.log(e))
    
-         const newUser = {
-            ...user,
-            image: req.file ? req.file.filename : 'default-image.png'
-         };
-   
-         userModel.save(newUser);
-   
-         return res.redirect('/users/login/');
-      } else {
-
-         return res.render('users/user-register-form', { errors: errors.mapped(), old: req.body });
-
       }
+
+      return res.render('users/user-register-form', { errors: errors.mapped(), old: req.body });
    },
 
    // Login - Form to login
@@ -81,18 +65,21 @@ module.exports = {
       return res.render('users/user-login-form');
    },
 
-   processLogin (req, res) {
+   async processLogin (req, res) {
 
       const errors = validationResult(req);
 
       if(errors.isEmpty()){
          
-         const user = userModel.findBySomething(e => e.email == req.body.email);
+         const user = await User.findOne({
+            where: {
+               email: req.body.email
+            }
+         });
 
          //Logueo al usuario
          delete user.password;
          req.session.user = user;
-         res.locals.user = req.session.user;
 
          //Recuerdo al usuario si puso "Recuérdame"
          if(req.body.remember){
@@ -101,29 +88,37 @@ module.exports = {
             const token = crypto.randomBytes(64).toString('base64');
             // Creo la cookie por 3 meses
             res.cookie('userToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
-            userTokenModel.save({userId: user.id, token});
+            Token.create({
+               token,
+               userId: user.id
+            });
          }
 
          return res.redirect('/');
 
-      } else {
-
-         return res.render('users/user-login-form', { errors: errors.mapped() , old: req.body});
       }
 
-
-
+      return res.render('users/user-login-form', { errors: errors.mapped() , old: req.body});
    },
 
-   logout (req, res) {
+   async logout (req, res) {
       
       // Borro la session
       req.session.destroy();
 
       //Borro la cookie
-      const userToken = userTokenModel.findBySomething(e => e.token == req.cookies.userToken);
-      if(userToken){
-         userTokenModel.destroy(userToken.id);
+      const tokenSearched = await Token.findeOne({
+         where: {
+            token: req.cookies.userToken
+         }
+      });
+
+      if (tokenSearched){
+         await Token.destroy({
+            where: {
+               id: tokenSearched.id
+            }
+         });
          res.clearCookie('userToken');
       }
 
@@ -133,24 +128,26 @@ module.exports = {
    // Update - Form to edit
    edit (req, res) {
       
-      const user = userModel.findByPK(req.params.id);
+      const user = User.findByPK(req.params.id);
 
       return res.render('user-edit-form', { user });
    },
    // Update - Method to update
-   update (req, res) {
+   // async update (req, res) {
       
+   //    await User.update(req.body, req.req.params.id);
 
-      userModel.update(req.body, req.req.params.id);
-
-      return res.redirect('/user/profile/' + req.params.id);
-
-   },
+   //    return res.redirect('/user/profile/' + req.params.id);
+   // },
 
    // Delete - Delete one user from DB
-   destroy (req, res) {
+   async destroy (req, res) {
       
-      userModel.destroy(req.params.id);
+      await User.destroy({
+         where: {
+            id: req.params.id
+         }
+      });
 
       return res.redirect('/');
    }

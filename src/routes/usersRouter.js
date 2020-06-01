@@ -30,14 +30,15 @@ var upload = multer({
 
    // Validate image
    fileFilter: (req, file, cb) => {
-
-   
+      
       const acceptedExtensions = ['.jpg', '.jpeg', '.png'];
-      console.log(file);
+
       const ext = path.extname(file.originalname);
+
       if (!acceptedExtensions.includes(ext)){
          req.file = file;
       }
+      
       cb(null, acceptedExtensions.includes(ext));
    }
 });
@@ -61,7 +62,7 @@ router.post('/logout/', authMiddleware, usersController.logout); /* POST - Logou
 
 /*** EDIT ONE user ***/ 
 router.get('/:id/edit/', usersController.edit); /* GET - Form to create */
-router.put('/:id', usersController.update); /* PUT - Update in DB */
+// router.put('/:id', usersController.update); /* PUT - Update in DB */
 
 /*** DELETE ONE user***/ 
 router.delete('/:id', usersController.destroy); /* DELETE - Delete from DB */

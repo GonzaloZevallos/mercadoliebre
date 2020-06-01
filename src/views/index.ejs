@@ -11,14 +11,15 @@
 	<div class="banner"></div>
 	<!-- /Banner -->
 
-	<!-- ultima visita -->
+	<!-- ultimos creados -->
 	<div class="container products-wrapper">
 		<div class="row">
 			<div class="col-12">
-				<h2 class="products-title">Basado en tu última visita</h2>
+				<h2 class="products-title">Ultimos creados</h2>
 			</div>
-			<!-- Show the "visited" products -->
-			<% visited.forEach(product => { %>
+			<!-- Show the "ultimos" products -->
+			<% if (ultimos.length > 0) { %>
+			<% ultimos.forEach(product => { %>
 
 				<div class="col-12 col-sm-6 col-lg-3">
 					<section class="product-box">
@@ -27,7 +28,7 @@
 								<img src="/images/products/<%= product.image %>" alt="<%= product.name %>">
 							</figure>
 							<article class="product-box_data">
-								<h2>$<%= toThousand(product.price) %></h2>
+								<h2>$<%= helpers.toThousand(product.price) %></h2>
 								<% if(product.discount > 0) { %>
 								<span><%= product.discount %> % OFF</span>
 								<% } %>
@@ -37,8 +38,13 @@
 						</a>
 					</section>
 				</div>
-
-			<% }); %> 
+	
+				<% }); %> 
+			<% } else { %>
+				<div class="col-12">
+					<h2 class="noproducts">Aun se encontraron productos</h2>
+				</div>
+			<% } %>
 			
 		</div>
 	</div>
@@ -51,6 +57,7 @@
 				<h2 class="products-title">Ofertas</h2>
 			</div>
 			<!-- Show the "in-sale" products -->
+			<% if (inSale.length > 0) { %>
 			<% inSale.forEach(product => { %>
 			
 			<div class="col-12 col-sm-6 col-lg-3">
@@ -60,7 +67,7 @@
 							<img src="/images/products/<%= product.image %>" alt="<%= product.name %>">
 						</figure>
 						<article class="product-box_data">
-							<h2>$<%= toThousand(product.price) %></h2>
+							<h2>$<%= helpers.toThousand(product.price) %></h2>
 							<span><%= product.discount %> % OFF</span>
 							<p><%= product.name %></p>
 							<i class="fas fa-truck"></i>
@@ -68,8 +75,13 @@
 					</a>
 				</section>
 			</div>
-			
+				
 			<% }); %>
+			<% } else { %>
+			<div class="col-12">
+				<h2 class="noproducts">Aun se encontraron productos</h2>
+			</div>
+			<% } %>
 		</div>
 	</div>
 	<!-- /Ofertas -->

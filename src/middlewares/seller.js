@@ -1,9 +1,10 @@
-const jsonModel = require('../models/json');
-const productModel = jsonModel('products');
+// ******** Sequelize ***********
 
-module.exports = (req, res, next) => {
-   const product = productModel.findByPK(req.params.id);
-   console.log(product);
+const { Product } = require('../database/models');
+
+module.exports = async (req, res, next) => {
+   const product = await Product.findByPK(req.params.id);
+
    if(product){
       if(req.session.user.id != product.userId){
          return res.redirect('/');

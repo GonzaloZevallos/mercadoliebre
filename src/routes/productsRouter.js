@@ -18,7 +18,7 @@ const productsController = require('../controllers/productsController');
 
 var storage = multer.diskStorage({
    destination: function (req, file, cb) {
-      cb(null, path.resolve(__dirname, '../../public/images/users'))
+      cb(null, path.resolve(__dirname, '../../public/images/products'))
    },
    filename: function (req, file, cb) {
       cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
@@ -31,13 +31,14 @@ var upload = multer({
    // Validate image
    fileFilter: (req, file, cb) => {
 
-
       const acceptedExtensions = ['.jpg', '.jpeg', '.png'];
-      console.log(file);
+
       const ext = path.extname(file.originalname);
+      
       if (!acceptedExtensions.includes(ext)) {
          req.file = file;
       }
+
       cb(null, acceptedExtensions.includes(ext));
    }
 });

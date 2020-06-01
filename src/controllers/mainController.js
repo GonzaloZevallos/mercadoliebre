@@ -1,19 +1,36 @@
-const jsonModel = require('../models/json');
-const productsModel = jsonModel('products');
+// ******** Sequelize ***********
 
-const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const { Product, Sequelize } = require('../database/models');
+const Op = Sequelize.Op;
 
 module.exports = {
-	root: function (req, res){
-		let visited = productsModel.filterBySomething(e => e.category == 'visited');
-		let inSale = productsModel.filterBySomething(e => e.category == 'in-sale');
+	async index (req, res){
+		let ultimos = await Product.findAll({
+			order: [['createdAt', 'DESC']],
+			limit: 6
+		});
+		let inSale = await Product.findAll({
+			where: {
+				discount: {
+					[Op.gt]: 0
+				}
+			},
+			limit: 6
+		});
 
-		res.render('index', { visited, inSale, toThousand })
+		res.render('index', { ultimos, inSale: inSale.sort(() => Math.random() - 0.5) })
 	},
-	search (req, res) {
-		let search = req.query.keywords;
-		let products = productsModel.filterBySomething(product => product.name == search);
+	async search (req, res) {
 
-		res.render('results', { products, toThousand })
+		let products = await Product.findAll({
+			where: {
+				name: {
+					[Op.like]: `%${req.query.keywords}%`
+				}
+			},
+			limit: 12
+		});
+
+		res.render('results', { products })
 	}
 };

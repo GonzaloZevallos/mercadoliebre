@@ -44,7 +44,9 @@ Thumbs.db
 *.config
 node_modules/
 data/
+src/jsonStyle/
 public/images/products/
 public/images/users/
 .vscode/
 *.pdf
+.env

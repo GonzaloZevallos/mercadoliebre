@@ -6,6 +6,8 @@ const express = require('express');
 const logger = require('morgan');
 const path = require('path');
 const methodOverride =  require('method-override'); // Pasar poder usar los métodos PUT y DELETE
+
+const viewHelpers = require('./middlewares/viewHelpers');
 const logMiddleware = require('./middlewares/log');
 
 // ************ express() - (don't touch) ************
@@ -22,18 +24,19 @@ app.use(session({
   saveUninitialized: true
 }));
 app.use(cookieParser());
-app.use(logMiddleware);
 app.use(methodOverride('_method')); // Pasar poder pisar el method="POST" en el formulario por PUT y DELETE
 
 // ************ Template Engine - (don't touch) ************
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views')); // Define la ubicación de la carpeta de las Vistas
 
-
+// My middlewares
+app.use(viewHelpers);
+app.use(logMiddleware);
 
 // ************ WRITE YOUR CODE FROM HERE ************
 // ************ Route System require and use() ************
-const mainRouter = require('./routes/main'); // Rutas main
+const mainRouter = require('./routes/mainRouter'); // Rutas main
 const productsRouter = require('./routes/productsRouter'); // Rutas /products
 const usersRouter = require('./routes/usersRouter'); // Rutas /user
 

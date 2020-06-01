@@ -1,17 +1,21 @@
-const jsonModel = require('../models/json');
-const userModel = jsonModel('users');
-const userTokenModel = jsonModel('userToken');
+// ******** Sequelize ***********
 
-module.exports = (req, res, next) => {
+const { User, Token } = require('../database/models');
+
+module.exports = async (req, res, next) => {
 
    res.locals.user = false;
 
    if (req.session.user) {
       res.locals.user = req.session.user;
    } else if (req.cookies.userToken){
-      const userToken = userTokenModel.findBySomething(e => e.token == req.cookies.userToken);
+      const userToken = await Token.findOne({
+         where: {
+            token: req.cookies.userToken
+         }
+      });
 
-      const user = userModel.findByPK(userToken.userId);
+      const user = await User.findByPK(userToken.userId);
       delete user.password;
       
       req.session.user = user;

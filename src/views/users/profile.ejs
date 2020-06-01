@@ -11,12 +11,12 @@
    <div class="container products-wrapper">
       <div class="row justify-content-center">
          <div class="col-12">
-            <h2 class="products-title"><%= locals.user.email %> </h2>
+            <h2 class="products-title"><%= locals.user.username %> </h2>
          </div>
          <div class="col-8">
             <div class="row product-detail justify-content-center">
                <div class="col-8 my-3">
-                  <img src="/images/users/<%= locals.user.image %>" alt="<%= locals.user.email %>">
+                  <img src="/images/users/<%= locals.user.image ? locals.user.image : 'default-image.png' %>" alt="<%= locals.user.username %>">
                </div>
             </div>
          </div>
@@ -35,7 +35,7 @@
                      <img src="/images/products/<%= product.image %>" alt="<%= product.name %>">
                   </figure>
                   <article class="product-box_data">
-                     <h2>$<%= toThousand(product.price) %></h2>
+                     <h2>$<%= helpers.toThousand(product.price) %></h2>
                      <% if(product.discount > 0) { %>
                      <span><%= product.discount %> % OFF</span>
                      <% } %>
