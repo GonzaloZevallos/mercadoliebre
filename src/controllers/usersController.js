@@ -37,8 +37,6 @@ module.exports = {
    async store (req, res) {
       
       const errors = validationResult(req);
-
-      return res.send(errors)
       
       if(errors.isEmpty()){
          
@@ -46,15 +44,11 @@ module.exports = {
          delete _body.retype;
          _body.password = bycrypt.hashSync(_body.password, 10);
          _body.admin = 0;
-         _body.image = req.file ? req.file.filename : NULL
+         _body.image = req.file ? req.file.filename : null
+
+         await User.create(_body)
          
-         // return res.send(_body)
-         User.create(_body)
-            .then(data => {
-               return res.redirect('/users/login/');
-            })
-            .catch(e => console.log(e))
-   
+         return res.redirect('/users/login/');
       }
 
       return res.render('users/user-register-form', { errors: errors.mapped(), old: req.body });
@@ -107,7 +101,7 @@ module.exports = {
       req.session.destroy();
 
       //Borro la cookie
-      const tokenSearched = await Token.findeOne({
+      const tokenSearched = await Token.findOne({
          where: {
             token: req.cookies.userToken
          }

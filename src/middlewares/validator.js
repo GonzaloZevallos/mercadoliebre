@@ -21,9 +21,25 @@ module.exports = {
             })
                .then(user => {
                   console.log(user)
-                  return user === null;
+
+                  if(user === null){
+                     return true;
+                  }else{
+                     return false
+                  }
+
+                  // if (user) {
+                  //    return false
+                  // } else {
+                  //    return true;
+                  // }
+
+                  // return user === null;
+
+                  // return !user;
                })
                .catch(e => console.log(e))
+
 
          }).withMessage('Este usuario ya esta registrado'),
       // Email
@@ -31,8 +47,6 @@ module.exports = {
          .notEmpty().withMessage('Campo obligatorio').bail()
          .isEmail().withMessage('Debes ingresar un email válido').bail()
          .custom(async (value, { req }) => {
-
-            console.log('email')
 
             const user = await User.findOne({
                where: {

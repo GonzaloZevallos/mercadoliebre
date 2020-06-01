@@ -37,7 +37,7 @@
 
 			<ul class="right-navbar">
 				<% if(locals.user){ %>
-					<li><a href="/users/profile">Mi perfil <i class="fas fa-poo"></i></a></li>
+					<li><a href="/users/profile"><%= locals.user.username %> <i class="fas fa-poo"></i></a></li>
 					<li><a href="#">Mis compras <i class="fas fa-shopping-basket"></i></a></li>
 					<li>
 						<form action="/users/logout" method="POST">
