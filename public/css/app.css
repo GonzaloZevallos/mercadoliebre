@@ -163,6 +163,10 @@ hr {
 
 
 /*====== Products ======*/
+
+
+
+
 .products-wrapper {
   margin-top: 30px;
   margin-bottom: 30px;
@@ -256,7 +260,6 @@ hr {
   transform: rotate(360deg);
   box-shadow: 0 0 5px var(--green);
 }
-
 
 /*====== Footer ======*/
 .main-footer {
@@ -426,6 +429,12 @@ textarea.form-input {
   min-height: 140px;
   resize: vertical;
   padding: 15px;
+}
+
+/* Cart */
+
+.info p{
+  font-size: 20px;
 }
 
 

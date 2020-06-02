@@ -5,6 +5,7 @@ const Op = Sequelize.Op;
 
 module.exports = {
 	index (req, res){
+		
 		// const ultimos = await Product.findAll({
 		// 	order: [['createdAt', 'DESC']],
 		// 	limit: 6
@@ -35,6 +36,7 @@ module.exports = {
 
 		Promise.all([ultimos, inSale])
 			.then(([ultimos, inSale]) => res.render('index', { ultimos, inSale: inSale.sort(() => Math.random() - 0.5) }))
+			.catch(e => console.log(e));
 
 	},
 	async search (req, res) {

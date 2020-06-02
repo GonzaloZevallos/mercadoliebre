@@ -9,6 +9,7 @@ const methodOverride =  require('method-override'); // Pasar poder usar los mét
 
 const viewHelpers = require('./middlewares/viewHelpers');
 const logMiddleware = require('./middlewares/log');
+const cartMiddleware = require('./middlewares/cart');
 
 // ************ express() - (don't touch) ************
 const app = express();
@@ -33,6 +34,7 @@ app.set('views', path.join(__dirname, '/views')); // Define la ubicación de la 
 // My middlewares
 app.use(viewHelpers);
 app.use(logMiddleware);
+app.use(cartMiddleware);
 
 // ************ WRITE YOUR CODE FROM HERE ************
 // ************ Route System require and use() ************

@@ -4,7 +4,8 @@ const { validationResult } = require('express-validator');
 
 // ******** Sequelize ***********
 
-const { User, Product, Token, Brand} = require('../database/models');
+const Op = require('../database/models').Op;
+const { User, Product, Token, Cart } = require('../database/models');
 
 module.exports = {
    // Index - Show all users
@@ -141,7 +142,7 @@ module.exports = {
    // Update - Form to edit
    edit (req, res) {
       
-      const user = User.findByPK(req.params.id);
+      const user = User.findByPk(req.params.id);
 
       return res.render('user-edit-form', { user });
    },
@@ -164,6 +165,111 @@ module.exports = {
          }
       })
          .then(user => res.redirect('/'))
+         .catch(e => console.log(e));
+   },
+
+   cart (req, res) {
+
+      Cart.findAll({
+         where: {
+            userId: req.session.user.id,
+            state: 1
+         }
+      })
+         .then(carts => res.render('users/cart', { carts }))
+   },
+
+   addToCart (req, res) {
+
+      req.session.cart++;
+
+      Product.findByPk(req.body.productId)
+         .then(product => {
+
+            Cart.findAll({
+               limit: 1,
+               order: [
+                  ['createdAt', 'DESC']
+               ]
+            })
+               .then(arrayCartSearched => {
+
+                  const cartSearched = arrayCartSearched[0];
+
+                  let price = Number(product.discount) ? product.price - (product.price * product.discount / 100) : product.price;
+      
+                  const cart = {
+                     productName: product.name,
+                     price: price,
+                     quantity: req.body.quantity,
+                     image: product.image,
+                     subTotal: price * req.body.quantity,
+                     state: 1,
+                     userId: req.session.user.id,
+                     order: cartSearched ? cartSearched.order++ : 1000
+                  }
+      
+                  Cart.create(cart)
+                     .then(cart => res.redirect('/users/cart'))
+                     .catch(e => console.log(e));
+               })
+               .catch(e => console.log(e));
+
+         })
+
+   },
+
+   deleteFromCart (req, res) {
+
+      req.session.cart--
+
+      Cart.destroy({
+         where: {
+            id: req.body.cartId
+         }
+      })
+         .then(response => res.redirect('/users/cart'))
+         .catch(e => console.log(e));
+      
+   },
+
+   shop (req, res) {
+      Cart.findAll({
+         where: {
+            userId: req.body.userId,
+            state: 1
+         }
+      })
+         .then(carts => {
+
+            let cartPromises = [];
+
+            carts.forEach(cart => {
+               cart.state = 0;
+               // No me updatea los carritos
+               let promise = Cart.update(cart, {
+                  where: {
+                     id: cart.id
+                  }
+               })
+
+               cartPromises = [...cartPromises, promise]
+            })
+
+            Promise.all(cartPromises)
+               .then(cartPromises => console.log(cartPromises))
+               .catch(e => console.log(e));
+
+         })
+         .catch(e => console.log(e));
+   },
+
+   history (req, res) {
+      Cart.findAll()
+         .then(carts => {
+            return res.send(carts);
+            res.render('users/history', { carts })
+         })
          .catch(e => console.log(e));
    }
 }

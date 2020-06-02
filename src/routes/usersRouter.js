@@ -67,4 +67,10 @@ router.get('/:id/edit/', usersController.edit); /* GET - Form to create */
 /*** DELETE ONE user***/ 
 router.delete('/:id', usersController.destroy); /* DELETE - Delete from DB */
 
+router.get('/cart', authMiddleware, usersController.cart);
+router.post('/addToCart', authMiddleware, usersController.addToCart);
+router.get('/history', authMiddleware, usersController.history);
+router.post('/shop', authMiddleware, usersController.shop);
+router.post('/deleteFromCart', authMiddleware, usersController.deleteFromCart);
+
 module.exports = router;

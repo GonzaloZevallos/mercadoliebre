@@ -8,7 +8,7 @@ module.exports = {
 	// Root - Show all products
 	index (req, res) {
 		Product.findAll()
-			.then(products => res.render('products/products', { products }))
+			.then(products => res.render('products/products', { products: products.sort(() => Math.random() - 0.5) }))
 			.catch(e => console.log(e));
 	},
 

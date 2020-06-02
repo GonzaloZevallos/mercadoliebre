@@ -51,13 +51,19 @@
 							</li>
 						</ul>
 
-						<a href="#" class="buy-now-button">COMPRAR AHORA</a>
-						<hr>
 						<% if(locals.user.id == product.userId){ %> 
-						<a href="/products/<%= product.id %>/edit" class="action-button edit">EDITAR PRODUCTO</a>
-						<form action="/products/<%= product.id %>?_method=DELETE" method="POST" style="display: inline-flex">
-							<button type="submit" class="action-button delete">ELIMINAR</button>
-						</form>
+							<a href="/products/<%= product.id %>/edit" class="action-button edit">EDITAR PRODUCTO</a>
+							<form action="/products/<%= product.id %>?_method=DELETE" method="POST" style="display: inline-flex">
+								<button type="submit" class="action-button delete">ELIMINAR</button>
+							</form>
+						<% } else { %>
+							<form action="/users/addToCart" method="POST" style="display: inline-bock">
+								<label for="quantity">Cantidad</label>
+								<input type="number" id="quantity" name="quantity" value="0">
+								<input type="hidden" name="productId" value="<%= product.id %>">
+								<button style="display: inline-block; width: 100%;" type="submit" class="mt-4 buy-now-button">AGREGAR AL CARRITO</button>
+							</form>
+							<hr>
 						<% } %>
 					</article>
 				</div>
