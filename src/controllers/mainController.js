@@ -4,12 +4,27 @@ const { Product, Sequelize } = require('../database/models');
 const Op = Sequelize.Op;
 
 module.exports = {
-	async index (req, res){
-		let ultimos = await Product.findAll({
+	index (req, res){
+		// const ultimos = await Product.findAll({
+		// 	order: [['createdAt', 'DESC']],
+		// 	limit: 6
+		// });
+		// const inSale = await Product.findAll({
+		// 	where: {
+		// 		discount: {
+		// 			[Op.gt]: 0
+		// 		}
+		// 	},
+		// 	limit: 6
+		// });
+
+		// return res.render('index', { ultimos, inSale: inSale.sort(() => Math.random() - 0.5) })
+
+		const ultimos = Product.findAll({
 			order: [['createdAt', 'DESC']],
 			limit: 6
 		});
-		let inSale = await Product.findAll({
+		const inSale = Product.findAll({
 			where: {
 				discount: {
 					[Op.gt]: 0
@@ -18,11 +33,13 @@ module.exports = {
 			limit: 6
 		});
 
-		res.render('index', { ultimos, inSale: inSale.sort(() => Math.random() - 0.5) })
+		Promise.all([ultimos, inSale])
+			.then(([ultimos, inSale]) => res.render('index', { ultimos, inSale: inSale.sort(() => Math.random() - 0.5) }))
+
 	},
 	async search (req, res) {
 
-		let products = await Product.findAll({
+		const products = await Product.findAll({
 			where: {
 				name: {
 					[Op.like]: `%${req.query.keywords}%`
@@ -31,6 +48,6 @@ module.exports = {
 			limit: 12
 		});
 
-		res.render('results', { products })
+		return res.render('results', { products })
 	}
 };

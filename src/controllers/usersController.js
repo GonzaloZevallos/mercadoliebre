@@ -8,23 +8,23 @@ const { User, Product, Token, Brand} = require('../database/models');
 
 module.exports = {
    // Index - Show all users
-   async index (req, res) {
+   index (req, res) {
       
-      const users = await User.findAll();
-
-      return res.render('users/users', { users });
+      User.findAll()
+         .then(users => res.render('users/users', { users }))
+         .catch(e => console.log(e));
    },
 
    // Profile - Profile from one user
-   async profile (req, res) {
+   profile (req, res) {
 
-      const products = await Product.findAll({
+      Product.findAll({
          where: {
             userId: req.session.user.id
          }
-      });
-
-      return res.render('users/profile', { products });
+      })
+         .then(products => res.render('users/profile', { products }))
+         .catch(e => console.log(e));
    },
 
    // Create - Form to create
@@ -34,9 +34,10 @@ module.exports = {
    },
 
    // Store -  Method to store
-   async store (req, res) {
+   store (req, res) {
       
       const errors = validationResult(req);
+      // return res.send(errors)
       
       if(errors.isEmpty()){
          
@@ -46,12 +47,13 @@ module.exports = {
          _body.admin = 0;
          _body.image = req.file ? req.file.filename : null
 
-         await User.create(_body)
-         
-         return res.redirect('/users/login/');
+         User.create(_body)
+            .then(user => res.redirect('/users/login/'))
+            .catch(e => console.log(e));
+      } else {
+         return res.render('users/user-register-form', { errors: errors.mapped(), old: req.body });
       }
 
-      return res.render('users/user-register-form', { errors: errors.mapped(), old: req.body });
    },
 
    // Login - Form to login
@@ -59,64 +61,81 @@ module.exports = {
       return res.render('users/user-login-form');
    },
 
-   async processLogin (req, res) {
+   processLogin (req, res) {
 
       const errors = validationResult(req);
 
       if(errors.isEmpty()){
          
-         const user = await User.findOne({
+         User.findOne({
             where: {
                email: req.body.email
             }
-         });
+         })
+            .then(user => {
+               //Logueo al usuario
+               delete user.password;
+               req.session.user = user;
+      
+               //Recuerdo al usuario si puso "Recuérdame"
+               if(req.body.remember){
+      
+                  // https://stackoverflow.com/questions/8855687/secure-random-token-in-node-js
+                  const token = crypto.randomBytes(64).toString('base64');
+                  // Creo la cookie por 3 meses
+                  res.cookie('userToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
+                  // La guardo en la DB
+                  Token.create({
+                     token,
+                     userId: user.id
+                  })
+                     .then(response => res.redirect(req.header('Referer') || '/'))
+                     .catch(e => console.log(e));
+               } else {
+                  return res.redirect(req.header('Referer') || '/');
+               }
 
-         //Logueo al usuario
-         delete user.password;
-         req.session.user = user;
-
-         //Recuerdo al usuario si puso "Recuérdame"
-         if(req.body.remember){
-
-            // https://stackoverflow.com/questions/8855687/secure-random-token-in-node-js
-            const token = crypto.randomBytes(64).toString('base64');
-            // Creo la cookie por 3 meses
-            res.cookie('userToken', token, { maxAge: 1000 * 60 * 60 * 24 * 90 });
-            Token.create({
-               token,
-               userId: user.id
-            });
-         }
-
-         return res.redirect('/');
-
+            })
+            .catch(e => console.log(e));
+            
+      } else {
+         return res.render('users/user-login-form', { errors: errors.mapped() , old: req.body});
       }
 
-      return res.render('users/user-login-form', { errors: errors.mapped() , old: req.body});
    },
 
-   async logout (req, res) {
+   logout (req, res) {
       
       // Borro la session
       req.session.destroy();
 
       //Borro la cookie
-      const tokenSearched = await Token.findOne({
-         where: {
-            token: req.cookies.userToken
-         }
-      });
-
-      if (tokenSearched){
-         await Token.destroy({
+      if (req.cookies.userToken){
+         Token.findOne({
             where: {
-               id: tokenSearched.id
+               token: req.cookies.userToken
             }
-         });
-         res.clearCookie('userToken');
+         })
+            .then(token => {
+               if (token){
+                  Token.destroy({
+                     where: {
+                        id: token.id
+                     }
+                  })
+                     .then(token => {
+                        res.clearCookie('userToken')
+                        return res.redirect('/');
+                     })
+                     .catch(e => console.log(e));
+               }
+            })
+            .catch(e => console.log(e));
+      } else {
+         return res.redirect('/');
       }
 
-      return res.redirect('/');
+
    },
 
    // Update - Form to edit
@@ -127,22 +146,24 @@ module.exports = {
       return res.render('user-edit-form', { user });
    },
    // Update - Method to update
-   // async update (req, res) {
+   update (req, res) {
       
-   //    await User.update(req.body, req.req.params.id);
-
-   //    return res.redirect('/user/profile/' + req.params.id);
-   // },
+      User.update(req.body, {
+         id: req.req.params.id
+      })
+         .then(user => res.redirect('/user/profile/' + req.params.id))
+         .catch(e => console.log(e));
+   },
 
    // Delete - Delete one user from DB
-   async destroy (req, res) {
+   destroy (req, res) {
       
-      await User.destroy({
+      User.destroy({
          where: {
             id: req.params.id
          }
-      });
-
-      return res.redirect('/');
+      })
+         .then(user => res.redirect('/'))
+         .catch(e => console.log(e));
    }
 }

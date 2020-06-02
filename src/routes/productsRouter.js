@@ -31,6 +31,8 @@ var upload = multer({
    // Validate image
    fileFilter: (req, file, cb) => {
 
+      console.log(file)
+
       const acceptedExtensions = ['.jpg', '.jpeg', '.png'];
 
       const ext = path.extname(file.originalname);
@@ -51,11 +53,11 @@ router.get('/detail/:id', productsController.detail); /* GET - Product detail - 
 
 /*** CREATE ONE PRODUCT ***/ 
 router.get('/create', authMiddleware, productsController.create); /* GET - Form to create - create */
-router.post('/', upload.single('image'), validator.createProduct, productsController.store); /* POST - Store in DB - store*/
+router.post('/', authMiddleware, upload.single('image'), validator.createProduct, productsController.store); /* POST - Store in DB - store*/
 
 /*** EDIT ONE PRODUCT ***/ 
 router.get('/:id/edit', sellerMiddleware, productsController.edit); /* GET - Form to create - edit */
-router.put('/:id', sellerMiddleware, validator.editProduct, productsController.update); /* PUT - Update in DB - update*/
+router.put('/:id', sellerMiddleware, upload.single('image'), validator.editProduct, productsController.update); /* PUT - Update in DB - update*/
 
 /*** DELETE ONE PRODUCT***/ 
 router.delete('/:id', sellerMiddleware, productsController.destroy); /* DELETE - Delete from DB - destroy */
