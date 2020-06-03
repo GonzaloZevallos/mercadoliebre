@@ -5,33 +5,19 @@ const Op = Sequelize.Op;
 
 module.exports = {
 	index (req, res){
-		
-		// const ultimos = await Product.findAll({
-		// 	order: [['createdAt', 'DESC']],
-		// 	limit: 6
-		// });
-		// const inSale = await Product.findAll({
-		// 	where: {
-		// 		discount: {
-		// 			[Op.gt]: 0
-		// 		}
-		// 	},
-		// 	limit: 6
-		// });
-
-		// return res.render('index', { ultimos, inSale: inSale.sort(() => Math.random() - 0.5) })
 
 		const ultimos = Product.findAll({
 			order: [['createdAt', 'DESC']],
-			limit: 6
+			limit: 8
 		});
+		
 		const inSale = Product.findAll({
 			where: {
 				discount: {
 					[Op.gt]: 0
 				}
 			},
-			limit: 6
+			limit: 8
 		});
 
 		Promise.all([ultimos, inSale])
@@ -39,6 +25,8 @@ module.exports = {
 			.catch(e => console.log(e));
 
 	},
+
+	// Ejemplo con async / await
 	async search (req, res) {
 
 		const products = await Product.findAll({

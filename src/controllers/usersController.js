@@ -122,7 +122,8 @@ module.exports = {
                   Token.destroy({
                      where: {
                         id: token.id
-                     }
+                     },
+                     force: true
                   })
                      .then(token => {
                         res.clearCookie('userToken')
@@ -187,6 +188,9 @@ module.exports = {
          .then(product => {
 
             Cart.findAll({
+               where: {
+                  state: 0
+               },
                limit: 1,
                order: [
                   ['createdAt', 'DESC']
@@ -194,9 +198,9 @@ module.exports = {
             })
                .then(arrayCartSearched => {
 
-                  const cartSearched = arrayCartSearched[0];
+                  const lastCart = arrayCartSearched[0];
 
-                  let price = Number(product.discount) ? product.price - (product.price * product.discount / 100) : product.price;
+                  let price = Number(product.discount) > 0 ? product.price - (product.price * product.discount / 100) : product.price;
       
                   const cart = {
                      productName: product.name,
@@ -206,7 +210,7 @@ module.exports = {
                      subTotal: price * req.body.quantity,
                      state: 1,
                      userId: req.session.user.id,
-                     order: cartSearched ? cartSearched.order++ : 1000
+                     order: lastCart ? lastCart.order++ : 1000
                   }
       
                   Cart.create(cart)
@@ -226,7 +230,8 @@ module.exports = {
       Cart.destroy({
          where: {
             id: req.body.cartId
-         }
+         },
+         force: true
       })
          .then(response => res.redirect('/users/cart'))
          .catch(e => console.log(e));
@@ -240,32 +245,47 @@ module.exports = {
             state: 1
          }
       })
-         .then(carts => {
+      .then(carts => {
+         
+         // return res.send(carts)
 
-            let cartPromises = [];
+         //Option 1  ********************
 
-            carts.forEach(cart => {
-               cart.state = 0;
-               // No me updatea los carritos
-               let promise = Cart.update(cart, {
-                  where: {
-                     id: cart.id
-                  }
-               })
+         Cart.bulkCreate(carts, {
+            updateOnDuplicate: ['productName']
+         })
+            .then(updatePromises => res.redirect('/users/history'))
+            .catch(e => console.log(e));
 
-               cartPromises = [...cartPromises, promise]
-            })
-
-            Promise.all(cartPromises)
-               .then(cartPromises => console.log(cartPromises))
-               .catch(e => console.log(e));
-
+         //Option 2  ********************
+ 
+         // let updatePromises = carts.map(cart => {
+         //    // Cierro el carrito
+         //    cart.state = 0;
+         //    // Actualizo la DB
+         //    return Cart.update(cart, {
+         //       where: {
+         //          id: cart.id
+         //       }
+         //    });
+            
+         // })
+         
+         // Promise.all(updatePromises)
+         // .then(updatePromises => res.redirect('/users/history'))
+         // .catch(e => console.log(e));
+         
          })
          .catch(e => console.log(e));
    },
 
    history (req, res) {
-      Cart.findAll()
+      Cart.findAll({
+         where: {
+            state: 0
+         },
+         group: ['order']
+      })
          .then(carts => {
             return res.send(carts);
             res.render('users/history', { carts })

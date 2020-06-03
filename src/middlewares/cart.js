@@ -1,9 +1,18 @@
-module.exports = (req, res, next) => {
-   // Si no existe session.cart, lo inicializamos vacío
-   if (!req.session.cart) {
-      req.session.cart = 0;
+const { Cart } = require('../database/models');
+
+module.exports = async (req, res, next) => {
+   if (req.session.user) {
+      Cart.findAndCountAll({
+         where: {
+            userId: req.session.user.id,
+            state: 1
+         }
+      })
+         .then(data => {
+            res.locals.cartQty = data.count;
+            return next();
+         })
+   }  else {
+      return next();
    }
-   // Setear en locals la cantidad de productos
-   res.locals.cartQty = req.session.cart;
-   next();
 }

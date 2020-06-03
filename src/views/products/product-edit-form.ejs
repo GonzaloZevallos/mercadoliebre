@@ -19,26 +19,28 @@
 					<div class="col-12 col-md-6">
 						<label for="name" class="form-label">Nombre del producto:</label>
 						<input type="text" id="name" name="name" placeholder="Ej: Zapatillas Reebok" class="form-input"
-							value="<%= typeof product != 'undefined' ? product.name : '' %>">
+							value="<%= product.name %>">
 						<p class="error"><%= typeof errors == 'undefined' ? '' : errors.name ? errors.name.msg : '' %></p>
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="price" class="form-label">Precio del producto:</label>
 						<input type="text" id="price" name="price" placeholder="Ej: 5678" class="form-input"
-							value="<%= typeof product != 'undefined' ? product.price : '' %>">
+							value="<%= product.price %>">
 						<p class="error"><%= typeof errors == 'undefined' ? '' : errors.price ? errors.price.msg : '' %></p>
 					</div>
-					<div class="col-12 row">
-						<label for="image" class="form-label col-12">Image:</label>
-						<input type="file" id="image" name="image" class="form-file col-12">
-						<div class="col-12">
-							<p class="error"><%= typeof errors == 'undefined' ? '' : errors.image ? errors.image.msg : '' %></p>
+					<div class="col-12 col-md-6">
+						<div class="row">
+							<label for="image" class="form-label col-12">Image:</label>
+							<input type="file" id="image" name="image" class="form-file col-12">
+							<div class="col-12">
+								<p class="error"><%= typeof errors == 'undefined' ? '' : errors.image ? errors.image.msg : '' %></p>
+							</div>
 						</div>
 					</div>
 					<div class="col-12 col-md-6">
 						<label for="discount" class="form-label">Descuento:</label>
 						<input type="text" id="discount" name="discount" placeholder="Ej: 15" class="form-input"
-							value="<%= typeof product != 'undefined' ? product.discount : '' %>">
+							value="<%= product.discount %>">
 						<p class="error"><%= typeof errors == 'undefined' ? '' : errors.discount ? errors.discount.msg : '' %></p>
 					</div>
 					<div class="col-12 col-md-6">
@@ -71,7 +73,7 @@
 					<div class="col-12 col-md-6">
 						<label for="description" class="form-label">Descipción:</label>
 						<textarea name="description" id="description"
-							class="form-input"><%= typeof product != 'undefined' ? product.description : '' %></textarea>
+							class="form-input"><%= product.description %></textarea>
 						<p class="error"><%= typeof errors == 'undefined' ? '' : errors.description ? errors.description.msg : '' %></p>
 					</div>
 					<div class="mt-5 col-12">

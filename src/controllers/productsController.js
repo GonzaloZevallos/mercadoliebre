@@ -99,17 +99,16 @@ module.exports = {
 				.catch(e => console.log(e));
 
 		} else {
-			const product = Product.findByPk(req.params.id);
 			const categories = Category.findAll();
 			const brands = Brand.findAll();
 	
-			Promise.all([product, categories, brands])
-				.then(([product, categories, brands]) => {
+			Promise.all([categories, brands])
+				.then(([categories, brands]) => {
 					
 					return res.render(
-						'products/product-create-form',
+						'products/product-edit-form',
 						{ 
-							product,
+							product: req.body,
 							categories,
 							brands,
 							errors: errors.mapped()
