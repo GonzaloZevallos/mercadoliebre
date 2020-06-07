@@ -1,13 +1,15 @@
 // ******** Sequelize ***********
 
-const { Product, Sequelize } = require('../database/models');
+const { Product, Sequelize, sequelize, Brand } = require('../database/models');
 const Op = Sequelize.Op;
 
 module.exports = {
 	index (req, res){
 
 		const ultimos = Product.findAll({
-			order: [['createdAt', 'DESC']],
+			order: [
+				['createdAt', 'DESC']
+			],
 			limit: 8
 		});
 		
@@ -32,7 +34,7 @@ module.exports = {
 		const products = await Product.findAll({
 			where: {
 				name: {
-					[Op.like]: `%${req.query.keywords}%`
+					[Op.like]: `%${req.query.search}%`
 				}
 			},
 			limit: 12

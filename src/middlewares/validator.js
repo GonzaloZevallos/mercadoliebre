@@ -55,6 +55,7 @@ module.exports = {
             }
 
             return true
+            
          }).withMessage('La imagen debe tener uno de los siguientes formatos: JPG, JPEG, PNG'),
       // Password
       body('password')

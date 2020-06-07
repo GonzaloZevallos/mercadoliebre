@@ -1,12 +1,13 @@
-const { Cart } = require('../database/models');
+const { Item } = require('../database/models');
 
 module.exports = async (req, res, next) => {
    if (req.session.user) {
-      Cart.findAndCountAll({
+      Item.findAndCountAll({
          where: {
             userId: req.session.user.id,
             state: 1
-         }
+         },
+         force: true
       })
          .then(data => {
             res.locals.cartQty = data.count;

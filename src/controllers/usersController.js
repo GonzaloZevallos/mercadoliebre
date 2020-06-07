@@ -4,8 +4,7 @@ const { validationResult } = require('express-validator');
 
 // ******** Sequelize ***********
 
-const Op = require('../database/models').Op;
-const { User, Product, Token, Cart } = require('../database/models');
+const { User, Product, Token, Cart, Item, sequelize } = require('../database/models');
 
 module.exports = {
    // Index - Show all users
@@ -106,36 +105,46 @@ module.exports = {
    },
 
    logout (req, res) {
-      
-      // Borro la session
-      req.session.destroy();
+      // Borro el carrito que no concluyó
+      Item.destroy({
+         where: {
+            userId: req.session.user.id,
+            state: 1
+         }
+      })
+         .then(() => {
 
-      //Borro la cookie
-      if (req.cookies.userToken){
-         Token.findOne({
-            where: {
-               token: req.cookies.userToken
+            // Borro la session
+            req.session.destroy();
+
+            //Borro la cookie
+            if (req.cookies.userToken){
+               return Token.findOne({
+                  where: {
+                     token: req.cookies.userToken
+                  }
+               })
+                  .then(token => {
+                     if (token){
+                        Token.destroy({
+                           where: {
+                              id: token.id
+                           },
+                           force: true
+                        })
+                           .then(token => {
+                              res.clearCookie('userToken')
+                              return res.redirect('/');
+                           })
+                           .catch(e => console.log(e));
+                     }
+                  })
+                  .catch(e => console.log(e));
+            } else {
+               return res.redirect('/');
             }
          })
-            .then(token => {
-               if (token){
-                  Token.destroy({
-                     where: {
-                        id: token.id
-                     },
-                     force: true
-                  })
-                     .then(token => {
-                        res.clearCookie('userToken')
-                        return res.redirect('/');
-                     })
-                     .catch(e => console.log(e));
-               }
-            })
-            .catch(e => console.log(e));
-      } else {
-         return res.redirect('/');
-      }
+         .catch(e => console.log(e));
 
 
    },
@@ -171,65 +180,50 @@ module.exports = {
 
    cart (req, res) {
 
-      Cart.findAll({
+      Item.findAll({
          where: {
             userId: req.session.user.id,
             state: 1
-         }
+         },
+         include: [
+            {
+               association: 'product'
+            }
+         ]
       })
-         .then(carts => res.render('users/cart', { carts }))
+         .then(items => res.render('users/cart', { items }))
    },
 
    addToCart (req, res) {
 
-      req.session.cart++;
-
+      // Busco el producto que voy a agregar como Item.
       Product.findByPk(req.body.productId)
          .then(product => {
+            
+            // Saco el valor del producto, teniendo en cuenta el descuento.
 
-            Cart.findAll({
-               where: {
-                  state: 0
-               },
-               limit: 1,
-               order: [
-                  ['createdAt', 'DESC']
-               ]
+            let price = Number(product.discount) > 0 ? product.price - (product.price * product.discount / 100) : product.price;
+
+            // Creo el Item de compra
+            return Item.create({
+               salePrice: price,
+               quantity: req.body.quantity,
+               subTotal: price * req.body.quantity,
+               state: 1,
+               userId: req.session.user.id,
+               productId: product.id
             })
-               .then(arrayCartSearched => {
-
-                  const lastCart = arrayCartSearched[0];
-
-                  let price = Number(product.discount) > 0 ? product.price - (product.price * product.discount / 100) : product.price;
-      
-                  const cart = {
-                     productName: product.name,
-                     price: price,
-                     quantity: req.body.quantity,
-                     image: product.image,
-                     subTotal: price * req.body.quantity,
-                     state: 1,
-                     userId: req.session.user.id,
-                     order: lastCart ? lastCart.order++ : 1000
-                  }
-      
-                  Cart.create(cart)
-                     .then(cart => res.redirect('/users/cart'))
-                     .catch(e => console.log(e));
-               })
-               .catch(e => console.log(e));
-
          })
+         .then(item => res.redirect('/users/cart'))
+         .catch(e => console.log(e));
 
    },
 
    deleteFromCart (req, res) {
 
-      req.session.cart--
-
-      Cart.destroy({
+      Item.destroy({
          where: {
-            id: req.body.cartId
+            id: req.body.itemId
          },
          force: true
       })
@@ -239,55 +233,57 @@ module.exports = {
    },
 
    shop (req, res) {
-      Cart.findAll({
+      let items;
+
+      // busco los items agregados al carrito
+      Item.findAll({
          where: {
-            userId: req.body.userId,
+            userId: req.session.user.id,
             state: 1
          }
       })
-      .then(carts => {
-         
-         // return res.send(carts)
-
-         //Option 1  ********************
-
-         Cart.bulkCreate(carts, {
-            updateOnDuplicate: ['productName']
+         // cierro los items
+         .then(itemsSearched => {
+            items = itemsSearched   
+            return sequelize.query(`UPDATE items SET state = 0 WHERE userId = ${req.session.user.id} AND state = 1`)
          })
-            .then(updatePromises => res.redirect('/users/history'))
-            .catch(e => console.log(e));
+         // busco el ultimo carrito creado
+         .then(() => {
 
-         //Option 2  ********************
- 
-         // let updatePromises = carts.map(cart => {
-         //    // Cierro el carrito
-         //    cart.state = 0;
-         //    // Actualizo la DB
-         //    return Cart.update(cart, {
-         //       where: {
-         //          id: cart.id
-         //       }
-         //    });
-            
-         // })
-         
-         // Promise.all(updatePromises)
-         // .then(updatePromises => res.redirect('/users/history'))
-         // .catch(e => console.log(e));
-         
+            return Cart.findOne({
+               order: [
+                  ['createdAt', 'DESC']
+               ]
+            })
          })
+         // creo el nuevo carrito
+         .then(cart => {
+            return Cart.create({
+               orderNumber: cart ? ++cart.orderNumber : 1000,
+               total: items.reduce((total, item) => total = total + item.subTotal, 0),
+               userId: req.session.user.id
+            })
+         })
+         // les asigno el id del carrito nuevo a los items no asignados
+         .then(cart => {
+            return sequelize.query(`UPDATE items SET cartId = ${cart.id} WHERE userId = ${req.session.user.id} AND cartId IS NULL`)
+         })
+         // redirect
+         .then(() => res.redirect('/users/history'))
          .catch(e => console.log(e));
    },
 
    history (req, res) {
       Cart.findAll({
          where: {
-            state: 0
+            userId: req.session.user.id
          },
-         group: ['order']
+         include : {
+            all: true,
+            nested: true
+         }
       })
          .then(carts => {
-            return res.send(carts);
             res.render('users/history', { carts })
          })
          .catch(e => console.log(e));

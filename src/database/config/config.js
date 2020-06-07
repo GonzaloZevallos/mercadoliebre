@@ -9,6 +9,8 @@ module.exports = {
     "dialect": "mysql",
     "operatorsAliases": 0,
     "define": {
+      // https://sequelize.org/master/manual/naming-strategies.html
+      // "underscored": true,
       "paranoid": true
     }
   },

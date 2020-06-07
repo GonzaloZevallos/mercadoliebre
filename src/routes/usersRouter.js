@@ -36,9 +36,9 @@ var upload = multer({
       const ext = path.extname(file.originalname);
 
       if (!acceptedExtensions.includes(ext)){
-         req.file = file;
+            req.file = file;
       }
-      
+         
       cb(null, acceptedExtensions.includes(ext));
    }
 });

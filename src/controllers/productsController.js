@@ -74,7 +74,7 @@ module.exports = {
 
 		if (errors.isEmpty()) {
 
-			const product = Product.findByPk(req.params.id)
+			Product.findByPk(req.params.id)
 				.then(product => {
 
 					const _body = req.body;

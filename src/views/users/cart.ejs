@@ -9,7 +9,7 @@
    <!-- /Header -->
 
    <div class="container products-wrapper">
-      <% if(carts.length != 0){ %>
+      <% if(items.length != 0){ %>
       <div class="row">
          <div class="col-12">
             <h1 class="products-title">Carrito de compras</h1>
@@ -18,23 +18,23 @@
       <div class="product-detail">
          <div class="row">
             <div class="col-12 col-lg-8 pt-4">
-               <% carts.forEach(cart => { %>
+               <% items.forEach(item => { %>
                
                <div class="col-12 mt-3">
                   <section class="row">
                      <figure class="col-3" >
-                        <img style='border: 1px solid grey' src="/images/products/<%= cart.image %>" alt="<%= cart.productName %>">
+                        <img style='border: 1px solid grey' src="/images/products/<%= item.product.image %>" alt="<%= item.product.name %>">
                      </figure>
                      <section class="col-6 info">
                         <p class="product-detail-price">
-                           $<%= helpers.toThousand(cart.price); %>
+                           $<%= helpers.toThousand(item.salePrice); %>
                         </p>
-                        <p><%= cart.productName %></p>
+                        <p><%= item.product.name %></p>
                      </section>
                      <section class="col-3">
-                        <p>Cantidad: <%= cart.quantity %></p>
+                        <p>Cantidad: <%= item.quantity %></p>
                         <form action="/users/deleteFromCart" method="POST" class="mt-4">
-                           <input type="hidden" name="cartId" value="<%= cart.id %>">
+                           <input type="hidden" name="itemId" value="<%= item.id %>">
                            <button type="submit" class="action-button delete">ELIMINAR</button>
                         </form>
                      </section>
@@ -47,7 +47,7 @@
             <div class="col-12 col-lg-4">
                <article class="product-detail-info">
                   <h2 class="product-detail-title">
-                     Total: $<%= helpers.toThousand(carts.reduce((total, cart) => total + cart.subTotal, 0)) %>
+                     Total: $<%= helpers.toThousand(items.reduce((total, item) => total + item.subTotal, 0)) %>
                   </h2>
                   <hr>
 
