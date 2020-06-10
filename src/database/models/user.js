@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    image: DataTypes.STRING
+    image: DataTypes.STRING,
   });
   User.associate = function(models) {
     User.hasMany(
@@ -29,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
       {
         as: 'carts',
         foreignKey: 'userId'
+      }
+    );
+
+    User.hasMany(
+      models.Item,
+      {
+        as: 'sales',
+        foreignKey: 'sellerId'
       }
     );
   };

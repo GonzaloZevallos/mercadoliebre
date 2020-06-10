@@ -11,7 +11,7 @@
    <div class="container products-wrapper">
       <div class="row justify-content-center">
          <div class="col-12">
-            <h2 class="products-title"><%= locals.user.username %> </h2>
+            <h2 class="products-title"><%= user.username %> </h2>
             <h3 style="text-align: right; font-size: 14px;">
                <a href="/users/history">
                   Mis compras
@@ -21,17 +21,57 @@
          <div class="col-8">
             <div class="row product-detail justify-content-center">
                <div class="col-8 my-3">
-                  <img src="/images/users/<%= locals.user.image ? locals.user.image : 'default-image.png' %>" alt="<%= locals.user.username %>">
+                  <img src="/images/users/<%= user.image ? user.image : 'default-image.png' %>" alt="<%= user.username %>">
                </div>
             </div>
          </div>
       </div>
       <div class="row">
+         <% if (user.sales.length > 0) { %>
+         <div class="col-12">
+            <h2 class="products-title">Tus ultimas ventas</h2>
+         </div>
+         <div class="col-12 mt-3">
+            <section class="row">
+               <% user.sales.reverse().forEach((item, index) => { %>
+
+                  <% if (index < 3) { %>
+                   
+                     <h4 class="col-4"><%= new Date(item.createdAt).toLocaleDateString() %> </h4>
+                     <section class="col-8 row info">
+                        <div class="col-6 row">
+                     <div class="col-3">
+                        <img src="/images/products/<%= item.product.image %>" alt="<%= item.product.name %>" width="50%">
+                     </div>
+                     <div class="col-9">
+                        <ul>
+                           <li style="font-size: 12px;">
+                              <small>
+                                 <%= item.product.name %> x<%= item.quantity %>
+                              </small>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+                  <div class="col-6">
+                     <p class="product-detail-price">
+                        $<%= helpers.toThousand(item.subTotal); %>
+                     </p>
+                  </div>
+               </section>
+               <% } %>
+               <% }) %>
+            </section>
+            <div class="mt-5" style="text-align: center; font-size: 14px;">
+               <a href="/users/profile/sales">Ver todas</a>
+            </div>
+         </div>
+         <% } %>
+         <% if(user.products.length != 0){ %> 
          <div class="col-12">
             <h2 class="products-title">Tus productos</h2>
          </div>
-         <% if(products.length != 0){ %> 
-         <% products.forEach(product => { %>
+         <% user.products.forEach(product => { %>
       
          <div class="col-12 col-sm-6 col-lg-3">
             <section class="product-box">
@@ -50,14 +90,9 @@
                </a>
             </section>
          </div>
-      
          <% }); %>
-         <% } else { %>
-         <div class="col-12">
-            <h2 class="noproducts">Todavía no tienes productos a la venta</h2>
-         </div>
          <% } %>
-      
+         
       </div>
    </div>
 

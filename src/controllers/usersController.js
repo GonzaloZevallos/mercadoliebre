@@ -17,20 +17,31 @@ module.exports = {
 
    // Profile - Profile from one user
    profile (req, res) {
-
-      Product.findAll({
-         where: {
-            userId: req.session.user.id
+      User.findByPk(req.session.user.id, {
+         include: {
+            all: true,
+            nested: true
          }
       })
-         .then(products => res.render('users/profile', { products }))
-         .catch(e => console.log(e));
+         .then(user => res.render('users/profile', { user }))
    },
 
    // Create - Form to create
    create (req, res) {
       
       return res.render('users/user-register-form');
+   },
+   sales (req, res) {
+      Item.findAll({
+         where: {
+            sellerId: req.session.user.id
+         },
+         include: {
+            all: true,
+            nested: true
+         }
+      })
+         .then(items => res.render('users/sales', {items}))
    },
 
    // Store -  Method to store
@@ -89,10 +100,10 @@ module.exports = {
                      token,
                      userId: user.id
                   })
-                     .then(response => res.redirect(req.header('Referer') || '/'))
+                     .then(response => res.redirect('/'))
                      .catch(e => console.log(e));
                } else {
-                  return res.redirect(req.header('Referer') || '/');
+                  return res.redirect('/');
                }
 
             })
@@ -197,7 +208,11 @@ module.exports = {
    addToCart (req, res) {
 
       // Busco el producto que voy a agregar como Item.
-      Product.findByPk(req.body.productId)
+      Product.findByPk(req.body.productId, {
+         include: {
+            all: true
+         }
+      })
          .then(product => {
             
             // Saco el valor del producto, teniendo en cuenta el descuento.
@@ -211,6 +226,7 @@ module.exports = {
                subTotal: price * req.body.quantity,
                state: 1,
                userId: req.session.user.id,
+               sellerId: product.user.id,
                productId: product.id
             })
          })
@@ -280,12 +296,27 @@ module.exports = {
          },
          include : {
             all: true,
-            nested: true
-         }
+            nested: true,
+            paranoid: false
+         },
+         order: [
+            ['createdAt', 'DESC']
+         ]
       })
          .then(carts => {
             res.render('users/history', { carts })
          })
          .catch(e => console.log(e));
+   },
+
+   showBuyDetail (req, res) {
+      Cart.findByPk(req.params.id, {
+         include: {
+            all: true,
+            nested: true,
+            paranoid: false
+         }
+      })
+         .then(cart => res.render('users/buyDetail', { cart }))
    }
 }

@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     subTotal: DataTypes.INTEGER,
     state: DataTypes.TINYINT,
     userId: DataTypes.INTEGER,
+    sellerId: DataTypes.INTEGER,
     productId: DataTypes.INTEGER,
     cartId: DataTypes.INTEGER
   });
@@ -33,6 +34,14 @@ module.exports = (sequelize, DataTypes) => {
       {
         as: 'product',
         foreignKey: 'productId'
+      }
+    );
+
+    Item.belongsTo(
+      models.User,
+      {
+        as: 'seller',
+        foreignKey: 'sellerId'
       }
     );
   };

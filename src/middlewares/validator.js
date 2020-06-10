@@ -83,7 +83,9 @@ module.exports = {
                      if (!bycrips.compareSync(req.body.password, user.password)) {
                         return Promise.reject('Contraseña o email inválidos')
                      }
-                  }
+                  } else {
+                     return Promise.reject('Contraseña o email inválidos')
+                  } 
                })
 
          })

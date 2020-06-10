@@ -47,6 +47,7 @@ var upload = multer({
 
 router.get('/', usersController.index); /* GET - All users */
 router.get('/profile/', authMiddleware, usersController.profile); /* GET - user detail */
+router.get('/profile/sales', authMiddleware, usersController.sales);
 
 /*** REGISTER user ***/ 
 router.get('/register/', guestMiddleware , usersController.create); /* GET - Form to create */
@@ -62,7 +63,7 @@ router.post('/logout/', authMiddleware, usersController.logout); /* POST - Logou
 
 /*** EDIT ONE user ***/ 
 router.get('/:id/edit/', usersController.edit); /* GET - Form to create */
-// router.put('/:id', usersController.update); /* PUT - Update in DB */
+// router.patch('/:id', usersController.update); /* PATCH - Update in DB */
 
 /*** DELETE ONE user***/ 
 router.delete('/:id', usersController.destroy); /* DELETE - Delete from DB */
@@ -72,5 +73,7 @@ router.post('/addToCart', authMiddleware, usersController.addToCart);
 router.get('/history', authMiddleware, usersController.history);
 router.post('/shop', authMiddleware, usersController.shop);
 router.post('/deleteFromCart', authMiddleware, usersController.deleteFromCart);
+router.get('/buy-detail/:id', authMiddleware, usersController.showBuyDetail);
+
 
 module.exports = router;

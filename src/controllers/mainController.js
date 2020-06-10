@@ -34,7 +34,8 @@ module.exports = {
 		const products = await Product.findAll({
 			where: {
 				name: {
-					[Op.like]: `%${req.query.search}%`
+					[Op.substring]: req.query.search
+					// [Op.like]: `%${req.query.search}%`
 				}
 			},
 			limit: 12

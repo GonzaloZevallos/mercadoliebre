@@ -13,8 +13,21 @@
 			<div class="col-12">
 				<h2 class="products-title">Todos los productos</h2>
 			</div>
-
 			<% if (products.length > 0) { %>
+				<div class="col-12 row">
+					<div class="col-6" style="text-align: center; font-size: 14px;">
+						<a href="/products/page/<%= page == 1 ? 1 : page - 1 %> ">
+							<p>Pagina anterior</p>
+						</a>
+					</div>
+					<% if (nextProducts.length == 4) { %>
+						<div class="col-6" style="text-align: center; font-size: 14px;">
+							<a href="/products/page/<%= Number(page) + 1%> ">
+								<p>Pagina siguiente</p>
+							</a>
+						</div>
+					<% } %>
+				</div>
 				<% products.forEach(product => { %>
 				
 			<div class="col-12 col-sm-6 col-lg-3">
@@ -39,7 +52,7 @@
 			<% } else { %>
 
 			<div class="col-12">
-				<h2 class="noproducts">Aun se encontraron productos</h2>
+				<h2 class="noproducts">No se encontraron productos</h2>
 			</div>
 			
 			<% } %>

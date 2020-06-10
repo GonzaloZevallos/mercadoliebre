@@ -5,11 +5,23 @@ const { validationResult } = require('express-validator');
 const { Product, Brand, Category } = require('../database/models');
 
 module.exports = {
+	
 	// Root - Show all products
 	index (req, res) {
-		Product.findAll()
-			.then(products => res.render('products/products', { products: products.sort(() => Math.random() - 0.5) }))
-			.catch(e => console.log(e));
+		let products;
+		Product.findAll({
+			limit: 4,
+			offset: (req.params.page - 1) * 4
+		})
+		.then(productsSearched => {
+			products = productsSearched;
+			return Product.findAll({
+				limit: 4,
+				offset: req.params.page * 4
+			});
+		})
+		.then(nextProducts => res.render('products/products', { products, page: req.params.page, nextProducts}))
+		.catch(e => console.log(e));
 	},
 
 	// Detail - Detail from one product
@@ -36,15 +48,18 @@ module.exports = {
 
 		if(errors.isEmpty()){
 			const _body = req.body;
-			_body.price = parseInt(req.body.price, 10);
-			_body.discount = parseInt(req.body.discount, 10);
+			_body.price = Number(req.body.price);
+			_body.discount = Number(req.body.discount);
 			_body.image = req.file.filename;
 			_body.userId = req.session.user.id;
-			_body.categoryId = parseInt(req.body.category, 10);
-			_body.brandId = parseInt(req.body.brand, 10);
+			_body.categoryId = Number(req.body.category);
+			_body.brandId = Number(req.body.brand);
 
 			Product.create(_body)
-				.then(product => res.redirect(`/products/detail/${product.id}`))
+				.then(product => {
+
+					return res.redirect(`/products/detail/${product.id}`)
+				})
 				.catch(e => console.log(e));
 		} else {
 			const categories = Category.findAll();
@@ -88,14 +103,13 @@ module.exports = {
 					delete _body.brand;
 					delete _body.category;
 
-					Product.update(_body, {
+					return Product.update(_body, {
 						where: {
 							id: req.params.id
 						}
 					})
-						.then(product => res.redirect(`/products/detail/${req.params.id}`))
-						.catch(e => console.log(e));
 				})
+				.then(confirm => res.redirect(`/products/detail/${req.params.id}`))
 				.catch(e => console.log(e));
 
 		} else {
@@ -123,9 +137,12 @@ module.exports = {
 		Product.destroy({
 			where: {
 				id: req.params.id
-			}
+			},
+			force: true
 		})
-			.then(product => res.redirect('/products'))
+			.then(confirm => {
+				res.redirect('/')
+			})
 			.catch(e => console.log(e));
 	}
 }

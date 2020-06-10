@@ -17,27 +17,19 @@
       <div class="product-detail">
          <div class="row">
             <div class="col-12 col-lg-8 pt-4">
-               <% if(carts.length != 0){ %>
-               <% carts.forEach(cart => { %>
-               <a href="/users/buy-detail/<%= cart.id %>">
+               <% if(items.length != 0){ %>
+               <% items.forEach(item => { %>
+               <a href="/users/buy-detail/<%= item.id %>">
                   <div class="col-12 mt-3">
                      <section class="row">
-                        <h4 class="col-4"><%= new Date(cart.createdAt).toLocaleDateString() %> </h4>
+                        <h4 class="col-4"><%= new Date(item.createdAt).toLocaleDateString() %> </h4>
                         <section class="col-8 row info">
-                           <div class="col-6">
-                              <ul>
-                                 <% cart.items.forEach(item => { %>
-                                    <li style="font-size: 12px;">
-                                       <small>
-                                          <%= item.product.name %> x<%= item.quantity %>
-                                       </small>
-                                    </li>
-                                 <% }) %>
-                              </ul>
-                           </div>
+                           <div>
+                              <p><%= `${item.product.name} x${item.quantity}`%> </p>
+                           </div>   
                            <div class="col-6">
                               <p class="product-detail-price">
-                                 $<%= helpers.toThousand(cart.total); %>
+                                 $<%= helpers.toThousand(item.subTotal) %>
                               </p>
                            </div>
                         </section>
@@ -52,7 +44,7 @@
                
                <% } else { %>
                <div class="col-12">
-                  <h2 class="products-title" style="padding: 100px 0; color: tomato;">Aun no tienes compras</h2>
+                  <h2 class="products-title" style="padding: 100px 0; color: tomato;">Aun no tienes ventas</h2>
                </div>
                <% } %>
             </div>

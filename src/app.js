@@ -42,9 +42,14 @@ const mainRouter = require('./routes/mainRouter'); // Rutas main
 const productsRouter = require('./routes/productsRouter'); // Rutas /products
 const usersRouter = require('./routes/usersRouter'); // Rutas /user
 
+// ************ Route System require and use() ************
+const apiProductsRouter = require('./routes/api/productsRouter');
+
 app.use('/', mainRouter);
 app.use('/products', productsRouter);
 app.use('/users', usersRouter);
+
+app.use('/api/products', apiProductsRouter);
 
 
 

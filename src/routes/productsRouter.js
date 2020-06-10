@@ -48,7 +48,7 @@ var upload = multer({
 
 // ************       Routes       ************
 
-router.get('/', productsController.index); /* GET - All products - index */
+router.get('/page/:page', productsController.index); /* GET - All products - index */
 router.get('/detail/:id', productsController.detail); /* GET - Product detail - show*/
 
 /*** CREATE ONE PRODUCT ***/ 
@@ -57,7 +57,7 @@ router.post('/', authMiddleware, upload.single('image'), validator.createProduct
 
 /*** EDIT ONE PRODUCT ***/ 
 router.get('/:id/edit', sellerMiddleware, productsController.edit); /* GET - Form to create - edit */
-router.put('/:id', sellerMiddleware, upload.single('image'), validator.editProduct, productsController.update); /* PUT - Update in DB - update*/
+router.patch('/:id', sellerMiddleware, upload.single('image'), validator.editProduct, productsController.update); /* PATCH - Update in DB - update*/
 
 /*** DELETE ONE PRODUCT***/ 
 router.delete('/:id', sellerMiddleware, productsController.destroy); /* DELETE - Delete from DB - destroy */
