@@ -5,6 +5,7 @@ const session = require('express-session');
 const express = require('express');
 const logger = require('morgan');
 const path = require('path');
+const cors = require('cors');
 const methodOverride =  require('method-override'); // Pasar poder usar los métodos PUT y DELETE
 
 const logMiddleware = require('./middlewares/log');
@@ -14,6 +15,7 @@ const cartMiddleware = require('./middlewares/cart');
 const app = express();
 
 // ************ Middlewares - (don't touch) ************
+app.use(cors());
 app.use(express.static(path.join(__dirname, '../public')));  // Necesario para los archivos estáticos en el folder /public
 app.use(express.urlencoded({ extended: false }));
 app.use(logger('dev'));
