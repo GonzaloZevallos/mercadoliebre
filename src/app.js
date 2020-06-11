@@ -7,7 +7,6 @@ const logger = require('morgan');
 const path = require('path');
 const methodOverride =  require('method-override'); // Pasar poder usar los métodos PUT y DELETE
 
-const viewHelpers = require('./middlewares/viewHelpers');
 const logMiddleware = require('./middlewares/log');
 const cartMiddleware = require('./middlewares/cart');
 
@@ -32,7 +31,6 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views')); // Define la ubicación de la carpeta de las Vistas
 
 // My middlewares
-app.use(viewHelpers);
 app.use(logMiddleware);
 app.use(cartMiddleware);
 

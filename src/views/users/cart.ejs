@@ -27,7 +27,7 @@
                      </figure>
                      <section class="col-6 info">
                         <p class="product-detail-price">
-                           $<%= helpers.toThousand(item.salePrice); %>
+                           $<%= item.salePrice; %>
                         </p>
                         <p><%= item.product.name %></p>
                      </section>
@@ -47,7 +47,7 @@
             <div class="col-12 col-lg-4">
                <article class="product-detail-info">
                   <h2 class="product-detail-title">
-                     Total: $<%= helpers.toThousand(items.reduce((total, item) => total + item.subTotal, 0)) %>
+                     Total: $<%= items.reduce((total, item) => total + item.subTotal, 0) %>
                   </h2>
                   <hr>
 

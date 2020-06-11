@@ -27,16 +27,16 @@
 						<h2 class="product-detail-title"><%= product.name %></h2>
 						<% if(product.discount > 0) { %> 
 							<p class="product-detail-price small">
-								<span>$<%= helpers.toThousand(product.price) %></span>
+								<span>$<%= product.price %></span>
 								/
 								<b><%= product.discount %>% OFF</b>
 							</p>
 							<p class="product-detail-price">
-								$<%= helpers.toThousand(product.price - (product.price * product.discount / 100)); %>
+								$<%= product.price - product.price * product.discount / 100; %>
 							</p>
 						<% } else { %>
 							<p class="product-detail-price">
-								$<%= helpers.toThousand(product.price); %>
+								$<%= product.price; %>
 							</p>
 						<% } %>
 
