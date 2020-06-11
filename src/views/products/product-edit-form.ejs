@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<div class="col-12">
-			<form action="/products/<%= product.id %>?_method=PATCH" method="POST" enctype="multipart/form-data">
+			<form action="/products/<%= product.id ? product.id : id %>?_method=PATCH" method="POST" enctype="multipart/form-data">
 				<div class="row product-detail">
 					<div class="col-12 col-md-6">
 						<label for="name" class="form-label">Nombre del producto:</label>
@@ -46,13 +46,20 @@
 					<div class="col-12 col-md-6">
 						<label for="category" class="form-label">Categoría:</label>
 						<select name="category" id="category" class="form-input">
+							<option value="" selected disabled>Elegí</option>
+							
 							<% categories.forEach(category => { %>
-								<% if (category.id == product.categoryId) { %>
-								<option value="<%= category.id %>" selected><%= category.name %></option>
-								<% } else { %>
-									<option value="<%= category.id %>"><%= category.name %></option>
-								<% } %>
+							<% if (category.id == product.categoryId) { %>
+
+							<option value="<%= category.id %>" selected><%= category.name %></option>
+
+							<% } else { %>
+
+							<option value="<%= category.id %>"><%= category.name %></option>
+
+							<% } %>
 							<% }) %>
+
 						</select>
 						<p class="error"><%= typeof errors == 'undefined' ? '' : errors.category ? errors.category.msg : '' %></p>
 					</div>
@@ -60,12 +67,17 @@
 						<label for="brand" class="form-label">Marca:</label>
 						<select name="brand" id="brand" class="form-input">
 							<option value="" selected disabled>Elegí</option>
+
 							<% brands.forEach(brand => { %>
-								<% if (brand.id == product.brandId) { %>
-									<option value="<%= brand.id %>" selected><%= brand.name %></option>
-								<% } else { %>
-									<option value="<%= brand.id %>"><%= brand.name %></option>
-								<% } %>
+							<% if (brand.id == product.brandId) { %>
+
+							<option value="<%= brand.id %>" selected><%= brand.name %></option>
+							
+							<% } else { %>
+
+							<option value="<%= brand.id %>"><%= brand.name %></option>
+								
+							<% } %>
 							<% }) %>
 						</select>
 						<p class="error"><%= typeof errors == 'undefined' ? '' : errors.category ? errors.category.msg : '' %></p>

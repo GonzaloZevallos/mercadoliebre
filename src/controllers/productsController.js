@@ -94,12 +94,12 @@ module.exports = {
 
 					const _body = req.body;
 
-					_body.price = parseInt(req.body.price, 10);
-					_body.discount = parseInt(req.body.discount, 10);
+					_body.price = Number(req.body.price);
+					_body.discount = Number(req.body.discount);
 					_body.image = req.file != undefined ? req.file.filename : product.image;
 					_body.userId = req.session.user.id;
-					_body.categoryId = parseInt(req.body.category, 10);
-					_body.brandId = parseInt(req.body.brand, 10);
+					_body.categoryId = Number(req.body.category);
+					_body.brandId = Number(req.body.brand);
 					delete _body.brand;
 					delete _body.category;
 
@@ -115,6 +115,8 @@ module.exports = {
 		} else {
 			const categories = Category.findAll();
 			const brands = Brand.findAll();
+
+			console.log(req.body)
 	
 			Promise.all([categories, brands])
 				.then(([categories, brands]) => {
@@ -123,6 +125,7 @@ module.exports = {
 						'products/product-edit-form',
 						{ 
 							product: req.body,
+							id: req.params.id,
 							categories,
 							brands,
 							errors: errors.mapped()

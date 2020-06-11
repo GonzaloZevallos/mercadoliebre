@@ -20,7 +20,7 @@
 							<p>Pagina anterior</p>
 						</a>
 					</div>
-					<% if (nextProducts.length == 4) { %>
+					<% if (nextProducts.length > 0) { %>
 						<div class="col-6" style="text-align: center; font-size: 14px;">
 							<a href="/products/page/<%= Number(page) + 1%> ">
 								<p>Pagina siguiente</p>
@@ -37,7 +37,7 @@
 							<img src="/images/products/<%= product.image %>" alt="<%= product.name %>">
 						</figure>
 						<article class="product-box_data">
-							<h2>$<%= helpers.toThousand(product.price) %></h2>
+							<h2>$<%= helpers.toThousand(product.price - (product.price * product.discount) / 100) %></h2>
 							<% if(product.discount > 0) { %>
 							<span><%= product.discount %> % OFF</span>
 							<% } %>

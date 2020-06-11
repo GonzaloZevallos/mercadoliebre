@@ -142,11 +142,11 @@ module.exports = {
          }).withMessage('La imagen debe tener uno de los siguientes formatos: JPG, JPEG, PNG'),
       body('price')
          .notEmpty().withMessage('Campo obligatorio').bail()
-         .custom(value => parseInt(value, 10) > 0).withMessage('No se aceptan números negativos'),
+         .custom(value => parseInt(value, 10) > 0).withMessage('El valor de tu producto no puede ser negativo ni 0'),
       body('discount')
          .notEmpty().withMessage('Campo obligatorio').bail()
          .isNumeric().withMessage('Solo se aceptan números').bail()
-         .custom(value => parseInt(value, 10) > 0).withMessage('No se aceptan números negativos').bail()
+         .custom(value => parseInt(value, 10) >= 0).withMessage('No se aceptan números negativos').bail()
          .custom(value => parseInt(value, 10) < 99).withMessage('El descuento no puede ser mayor ni igual al 100%'),
       body('category')
          .notEmpty().withMessage('Campo obligatorio'),

@@ -1,211 +1,216 @@
-const { Product } = require('../../database/models');
+const { Product, Category } = require('../../database/models');
+const { validationResult } = require('express-validator');
+
+const response = (req, res, meta, data) => res.json({ meta: { ...meta, url: req.originalUrl}, data: data ? data : undefined });;
 
 module.exports = {
-   index(req, res) {
-      Product.findAll({
-         include: {
-            all: true
-         }
-      })
-         .then(products => {
+   async index(req, res) {
 
-            if(products.length > 0){
-               products.forEach(product => product.setDataValue('endpoint', req.originalUrl + '/' + product.id));
-   
-               let response = {
-                  meta: {
-                     status: 200,
-                     url: req.originalUrl,
-                     length: products.length
-                  },
-                  data: products
-               }
-               return res.send(response);
-            }
+      try {
+         const products = await Product.findAll({
+            include: ['brand', 'user']
+         });
 
-            let response = {
-               meta: {
-                  status: 204,
-                  url: req.originalUrl
-               },
-               data: null
-            }
-            return res.send(response);
-         })
-         .catch(e => console.log(e));
-   },
-   find(req, res) {
-      Product.findByPk(req.params.id,{
-         include: {
-            all: true
-         }
-      })
-         .then(product => {
+         if (!req.query.category) {
+            if (products.length > 0) {
+               products.forEach(product => product.setDataValue('endpoint', req.originalUrl + product.id));
 
-            if(product){
-               product.setDataValue('endpoint', req.originalUrl + '/' + product.id);
-   
-               let response = {
-                  meta: {
-                     status: 200,
-                     url: req.originalUrl,
-                     length: product ? 1 : 0
-                  },
-                  data: product
-               }
-               return res.send(response);
-            }
-
-            let response = {
-               meta: {
+               return response(req, res, {
                   status: 200,
-                  url: req.originalUrl
-               },
-               data: null
-            }
-            return res.send(response);
+                  length: products.length
+               }, products)
 
-         })
-         .catch(e => console.log(e));
+            }
+
+            return response(req, res, {
+               status: 204
+            });
+
+         } else {
+
+            try {
+               let category = await Category.findByPk(req.query.category, {
+                  include: ['products']
+               });
+
+               if (category.products.length > 0) {
+                  let products = category.products;
+
+                  return response(req, res, {
+                     status: 200
+                  }, products)
+
+               }
+
+               return response(req, res, {
+                  status: 204
+               });
+               
+            } catch (error) {
+
+               console.log(error)
+               
+               return response(req, res, {
+                  status: 204
+               });
+
+            }
+            
+
+         }
+      } catch (error) {
+         console.log(error)
+
+         return response(req, res, {
+            status: 204
+         });
+      }
+ 
    },
-   store (req, res) {
+   async find(req, res) {
+
+      try {
+         const product = await Product.findByPk(req.params.id,{
+            include: {
+               all: true
+            }
+         });
+   
+         if(product){
+   
+            product.setDataValue('endpoint', req.originalUrl + product.id);
+   
+            return response(req, res, {
+               status: 200
+            }, product)
+   
+         }
+   
+         return response(req, res, {
+            status: 204
+         });;
+      } catch (error) {
+         return response(req, res, {
+            status: 204
+         });;
+      }
+
+
+   },
+   async store (req, res) {
+
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
+
          const _body = req.body;
-         _body.price = parseInt(req.body.price, 10);
-         _body.discount = parseInt(req.body.discount, 10);
+         _body.price = Number(req.body.price);
+         _body.discount = Number(req.body.discount);
          _body.image = req.file.filename;
          _body.userId = req.session.user.id;
-         _body.categoryId = parseInt(req.body.category, 10);
-         _body.brandId = parseInt(req.body.brand, 10);
+         _body.categoryId = Number(req.body.category);
+         _body.brandId = Number(req.body.brand);
 
-         Product.create(_body)
-            .then(product => {
+         const product = await Product.create(_body);
 
-               if(product){
-                  let response = {
-                     meta: {
-                        status: 201,
-                        url: req.originalUrl
-                     },
-                     data: product
-                  }
+         if(product){
 
-                  return res.send(response);
-               }
+            return response(req, res, {
+               status: 200
+            }, product);
 
-               let response = {
-                  meta: {
-                     status: 204,
-                     url: req.originalUrl
-                  }
-               }
-
-               return res.send(response);
-            })
-            .catch(e => console.log(e));
-      } else {
-
-         let response = {
-            meta: {
-               status: 204,
-               url: req.originalUrl
-            },
-            errors: errors.mapped()
          }
 
-         return res.send(response);
+         return response(req, res, {
+            status: 204
+         });;
+
+      } else {
+         return response(req, res, {
+            status: 204
+         }, req.body);
       }
    },
-   update (req, res) {
+   async update (req, res) {
       const errors = validationResult(req);
 
       if (errors.isEmpty()) {
-
-         Product.findByPk(req.params.id)
-            .then(product => {
-
-               const _body = req.body;
-
-               _body.price = parseInt(req.body.price, 10);
-               _body.discount = parseInt(req.body.discount, 10);
-               _body.image = req.file != undefined ? req.file.filename : product.image;
-               _body.userId = req.session.user.id;
-               _body.categoryId = parseInt(req.body.category, 10);
-               _body.brandId = parseInt(req.body.brand, 10);
-               delete _body.brand;
-               delete _body.category;
-
-               return Product.update(_body, {
+         
+         try {
+            const product = await Product.findByPk(req.params.id)
+                  
+            const _body = req.body;
+   
+            _body.price = Number(req.body.price);
+            _body.discount = Number(req.body.discount);
+            _body.image = req.file != undefined ? req.file.filename : product.image;
+            _body.userId = req.session.user.id;
+            _body.categoryId = Number(req.body.category);
+            _body.brandId = Number(req.body.brand);
+            delete _body.brand;
+            delete _body.category;
+            
+            try {
+               let confirm = await Product.update(_body, {
                   where: {
                      id: req.params.id
                   }
-               })
-            })
-            .then(confirm => {
+               });
+      
                if (confirm) {
-                  let response = {
-                     meta: {
-                        status: 201,
-                        url: req.originalUrl
-                     }
-                  }
-
-                  return res.send(response);
+                  return response(req, res, {
+                     status: 201
+                  });
                }
-
-               let response = {
-                  meta: {
-                     status: 204,
-                     url: req.originalUrl
-                  }
-               }
-
-               return res.send(response);
-            })
-            .catch(e => console.log(e));
-
-      } else {
-         let response = {
-            meta: {
-               status: 204,
-               url: req.originalUrl
-            },
-            errors: errors.mapped()
+      
+               return response(req, res, {
+                  status: 204
+               });
+            } catch (error) {
+               console.log(error)
+               return response(req, res, {
+                  status: 204
+               });
+            }
+         } catch (error) {
+            console.log(error)
+            return response(req, res, {
+               status: 204
+            });
          }
 
-         return res.send(response);
+         
+      } else {
+
+         return response(req, res, {
+            status: 201
+         }, errors.mapped());
+
       }
    },
-   destroy (req, res) {
-      Product.destroy({
-         where: {
-            id: req.params.id
-         }
-      })
-         .then(confirm => {
-            if(confirm){
-
-               let response = {
-                  meta: {
-                     status: 201,
-                     url: req.originalUrl
-                  }
-               }
-
-               return res.send(response);
+   async destroy (req, res) {
+      try {
+         let confirm = await Product.destroy({
+            where: {
+               id: req.params.id
             }
-
-            let response = {
-               meta: {
-                  status: 204,
-                  url: req.originalUrl
-               }
-            }
-
-            return res.send(response);
          })
-         .catch(e => console.log(e));
+   
+         if(confirm){
+            return response(req, res, {
+               status: 201
+            });
+         }
+   
+         console.log(error)
+         return response(req, res, {
+            status: 204
+         });
+      } catch (error) {
+         console.log(error)
+         return response(req, res, {
+            status: 204
+         });
+      }
    }
 }
