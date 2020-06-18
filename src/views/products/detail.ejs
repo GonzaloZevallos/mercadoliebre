@@ -32,7 +32,7 @@
 								<b><%= product.discount %>% OFF</b>
 							</p>
 							<p class="product-detail-price">
-								$<%= product.price - product.price * product.discount / 100; %>
+								$<%= helpers.trunc(product.price - product.price * product.discount / 100) %>
 							</p>
 						<% } else { %>
 							<p class="product-detail-price">
