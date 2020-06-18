@@ -1,7 +1,15 @@
 const { Product, Category } = require('../../database/models');
 const { validationResult } = require('express-validator');
 
-const response = (req, res, meta, data) => res.json({ meta: { ...meta, url: req.originalUrl}, data: data ? data : undefined });;
+const response = (req, res, meta, data) => {
+
+   let response = { 
+      meta: { ...meta, url: req.originalUrl },
+      data: data ? data : undefined
+   }
+
+   return res.json(response);
+};
 
 module.exports = {
    async index(req, res) {
@@ -18,7 +26,7 @@ module.exports = {
                return response(req, res, {
                   status: 200,
                   length: products.length
-               }, products)
+               }, { products })
 
             }
 
@@ -29,7 +37,10 @@ module.exports = {
          } else {
 
             try {
-               let category = await Category.findByPk(req.query.category, {
+               let category = await Category.findOne({
+                  where: {
+                     name: req.query.category
+                  },
                   include: ['products']
                });
 
@@ -38,7 +49,7 @@ module.exports = {
 
                   return response(req, res, {
                      status: 200
-                  }, products)
+                  }, { products })
 
                }
 
@@ -54,13 +65,11 @@ module.exports = {
                   status: 204
                });
 
-            }
-            
+            }     
 
          }
       } catch (error) {
-         console.log(error)
-
+         console.log(error);
          return response(req, res, {
             status: 204
          });
@@ -82,7 +91,7 @@ module.exports = {
    
             return response(req, res, {
                status: 200
-            }, product)
+            }, { product })
    
          }
    
@@ -117,7 +126,7 @@ module.exports = {
 
             return response(req, res, {
                status: 200
-            }, product);
+            }, { product });
 
          }
 
@@ -126,9 +135,14 @@ module.exports = {
          });;
 
       } else {
+
          return response(req, res, {
             status: 204
-         }, req.body);
+         }, {
+            old: req.body,
+            errors: errors.mapped()
+         });
+
       }
    },
    async update (req, res) {
@@ -184,7 +198,10 @@ module.exports = {
 
          return response(req, res, {
             status: 201
-         }, errors.mapped());
+         }, {
+            old: req.body,
+            errors: errors.mapped()
+         });
 
       }
    },

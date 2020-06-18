@@ -50,7 +50,7 @@ router.post('/', upload.single('image'), validator.createProduct, apiProductsCon
 
 /*** EDIT ONE PRODUCT ***/
 // router.get('/:id/edit', apiProductsController.edit); /* GET - Form to create - edit */
-router.patch('/:id', apiProductsController.update); /* PUT - Update in DB - update*/
+router.patch('/:id', apiProductsController.update); /* PATCH - Update in DB - update*/
 
 /*** DELETE ONE PRODUCT***/
 router.delete('/:id', apiProductsController.destroy); /* DELETE - Delete from DB - destroy */

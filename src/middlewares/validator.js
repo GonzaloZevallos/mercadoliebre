@@ -1,6 +1,6 @@
 const path = require('path');
 const { body } = require('express-validator');
-const bycrips = require('bcryptjs');
+const bycript = require('bcryptjs');
 
 // ******** Sequelize ***********
 
@@ -80,7 +80,7 @@ module.exports = {
             })
                .then(user => {
                   if (user) {
-                     if (!bycrips.compareSync(req.body.password, user.password)) {
+                     if (!bycript.compareSync(req.body.password, user.password)) {
                         return Promise.reject('Contraseña o email inválidos')
                      }
                   } else {

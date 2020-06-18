@@ -1,6 +1,6 @@
 // ******** Sequelize ***********
 
-const { Product, Sequelize, sequelize, Brand } = require('../database/models');
+const { Product, Sequelize, Brand, Category } = require('../database/models');
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
 	// Ejemplo con async / await
 	async search (req, res) {
 
-		const products = await Product.findAll({
+		let products = await Product.findAll({
 			where: {
 				name: {
 					[Op.substring]: req.query.search
@@ -41,6 +41,6 @@ module.exports = {
 			limit: 12
 		});
 
-		return res.render('results', { products })
+		return res.render('results', { products: products.sort(() => Math.random() - 0.5) })
 	}
 };

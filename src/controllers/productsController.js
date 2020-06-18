@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const createError = require('http-errors');
 
 // ******** Sequelize ***********
 
@@ -7,21 +8,27 @@ const { Product, Brand, Category } = require('../database/models');
 module.exports = {
 	
 	// Root - Show all products
-	index (req, res) {
-		let products;
-		Product.findAll({
-			limit: 4,
-			offset: (req.params.page - 1) * 4
-		})
-		.then(productsSearched => {
-			products = productsSearched;
-			return Product.findAll({
+	async index (req, res, next) {
+
+		if(Number(req.params.page)){
+			let products = await Product.findAll({
+				limit: 4,
+				offset: (req.params.page - 1) * 4
+			})
+			
+			let nextProducts = await Product.findAll({
 				limit: 4,
 				offset: req.params.page * 4
 			});
-		})
-		.then(nextProducts => res.render('products/products', { products, page: req.params.page, nextProducts}))
-		.catch(e => console.log(e));
+			if(products.length > 0){
+				return res.render('products/products', { products, nextProducts, page: req.params.page})
+			}
+			return next(createError(404))
+		} else {
+			// return res.status(500).send('Something broke! :(')
+			return next(createError(404))
+		}
+		
 	},
 
 	// Detail - Detail from one product
@@ -147,5 +154,12 @@ module.exports = {
 				res.redirect('/')
 			})
 			.catch(e => console.log(e));
+	},
+	async categories (req, res) {
+		let products = await Product.findAll();
+		let categories = await Category.findAll({
+			include: ['products']
+		});
+		return res.render('products/categories', { products, categories })
 	}
 }

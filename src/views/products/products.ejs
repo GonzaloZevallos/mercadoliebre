@@ -15,11 +15,17 @@
 			</div>
 			<% if (products.length > 0) { %>
 				<div class="col-12 row">
-					<div class="col-6" style="text-align: center; font-size: 14px;">
-						<a href="/products/page/<%= page == 1 ? 1 : page - 1 %> ">
-							<p>Pagina anterior</p>
-						</a>
-					</div>
+
+					<% if (page > 1) { %>
+						<div class="col-6" style="text-align: center; font-size: 14px;">
+							<a href="/products/page/<%= page == 1 ? 1 : page - 1 %> ">
+								<p>Pagina anterior</p>
+							</a>
+						</div>
+					<% } else { %>
+						<div class="col-6" style="text-align: center; font-size: 14px;">
+						</div>
+					<% } %> 
 					<% if (nextProducts.length > 0) { %>
 						<div class="col-6" style="text-align: center; font-size: 14px;">
 							<a href="/products/page/<%= Number(page) + 1%> ">

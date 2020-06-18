@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- Include Head -->
+<%- include('../partials/head', {title: 'Categorias', image: '', js: 'categories'}) %>
+
+<body>
+   <!-- Header -->
+   <%- include('../partials/headerNavbar') %>
+   <!-- /Header -->
+
+   <div class="container products-wrapper">
+      <% if(products.length != 0){ %>
+      <div class="row">
+         <div class="col-12">
+            <h1 class="products-title">Productos por categoría</h1>
+         </div>
+      </div>
+      <div class="product-detail">
+         <div class="row">
+            <div class="col-8 row products-container pl-5">
+ 
+               <% products.forEach(product => { %>
+				
+                  <div class="col-12 col-sm-6 col-lg-4">
+                     <section class="product-box">
+                        <a href="/products/detail/<%= product.id %> ">
+                           <figure class="product-box_image">
+                              <img src="/images/products/<%= product.image %>" alt="<%= product.name %>">
+                           </figure>
+                           <article class="product-box_data">
+                              <h2>$<%= product.price - product.price * product.discount / 100 %></h2>
+                              <% if(product.discount > 0) { %>
+                              <span><%= product.discount %> % OFF</span>
+                              <% } %>
+                              <p><%= product.name %></p>
+                              <i class="fas fa-truck"></i>
+                           </article>
+                        </a>
+                     </section>
+                  </div>
+				<% }); %>
+               
+            </div>
+            <div class="col-12 col-lg-4">
+               <article class="product-detail-info">
+                  <h2 class="product-detail-title categories" style="font-size: 20px; cursor: pointer;" id="allProducts">
+                     Todos los productos
+                  </h2>
+                  <hr>
+
+                  <% if (categories.length > 0) { %>
+
+                  <% categories.forEach(category => { %>
+                     <% if (category.products.length > 0) { %>
+                        <h2 class="product-detail-title categories" style="font-size: 15px; cursor: pointer;" id="<%= category.name %>">
+                           <%= category.name %> 
+                        </h2>
+                        <hr>
+                     <% } %>
+                     
+                  <% }) %>
+
+                  <% } %>
+                  
+                  
+               </article>
+            </div>
+         </div>
+      </div>
+      <% } else { %>
+      <div class="col-12">
+         <h2 class="products-title" style="padding: 100px 0; color: tomato;">Todavía no hay productos para catalogar.</h2>
+      </div>
+      <% } %>
+   </div>
+
+   <!-- footer -->
+   <%- include('../partials/footer') %>
+   <!-- /footer -->
+</body>
+
+</html>
