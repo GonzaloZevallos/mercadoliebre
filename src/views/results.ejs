@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <!-- Include Head -->
-<%- include('partials/head', {title: 'Resultados de tu búsqueda', image: null}) %>
+<%- include('partials/head', {title: 'Resultados de tu búsqueda', image: null, search: search}) %>
 <body>
 	<!-- Header -->
 	<%- include('partials/headerNavbar') %>
@@ -15,7 +15,7 @@
 	<div class="container products-wrapper">
 		<div class="row">
 			<div class="col-12">
-				<h2 class="products-title">Resultados de la búsqueda: <%= products.length %></h2>
+				<h2 class="products-title">Resultados de la búsqueda: <%= search %></h2>
 			</div>
 			<% if(products.length > 0) { %> 
 				<% products.forEach(product => { %>

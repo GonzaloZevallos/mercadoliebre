@@ -41,6 +41,6 @@ module.exports = {
 			limit: 12
 		});
 
-		return res.render('results', { products: products.sort(() => Math.random() - 0.5) })
+		return res.render('results', { products: products.sort(() => Math.random() - 0.5), search: req.query.search })
 	}
 };
