@@ -46,7 +46,7 @@
 					<div class="col-12 col-md-6">
 						<label for="category" class="form-label">Categoría:</label>
 						<select name="category" id="category" class="form-input">
-							<option value="" selected disabled>Elegí</option>
+							<option value="" disabled>Elegí</option>
 							
 							<% categories.forEach(category => { %>
 							<% if (category.id == product.categoryId) { %>
@@ -66,7 +66,7 @@
 					<div class="col-12 col-md-6">
 						<label for="brand" class="form-label">Marca:</label>
 						<select name="brand" id="brand" class="form-input">
-							<option value="" selected disabled>Elegí</option>
+							<option value="" disabled>Elegí</option>
 
 							<% brands.forEach(brand => { %>
 							<% if (brand.id == product.brandId) { %>
