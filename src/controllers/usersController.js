@@ -260,7 +260,7 @@ module.exports = {
       .then((itemsSearched) => {
         items = itemsSearched;
         return sequelize.query(
-          `UPDATE items SET state = 0 WHERE userId = ${req.session.user.id} AND state = 1`
+          `UPDATE items SET state = 0 WHERE userId = ${id} AND state = 1`
         );
       })
       // busco el ultimo carrito creado
