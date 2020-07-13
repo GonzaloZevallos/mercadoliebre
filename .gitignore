@@ -47,4 +47,4 @@ public/images/products/
 public/images/users/
 .vscode/
 .env
-src/database_v5/
+src/database_v6_clases/

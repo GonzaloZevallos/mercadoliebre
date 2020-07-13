@@ -188,12 +188,10 @@ module.exports = {
         userId: req.session.user.id,
         state: 1,
       },
-      include: [
-        {
-          association: "product",
-        },
-      ],
-    }).then((items) => res.render("users/cart", { items }));
+      include: ['product'],
+    }).then((items) => {
+      return res.render("users/cart", { items })
+    });
   },
 
   addToCart(req, res) {
@@ -259,9 +257,7 @@ module.exports = {
       // cierro los items
       .then((itemsSearched) => {
         items = itemsSearched;
-        return sequelize.query(
-          `UPDATE items SET state = 0 WHERE userId = ${id} AND state = 1`
-        );
+        return Item.closeItems(req.session.user.id);
       })
       // busco el ultimo carrito creado
       .then(() => {
@@ -282,9 +278,7 @@ module.exports = {
       })
       // les asigno el id del carrito nuevo a los items no asignados
       .then((cart) => {
-        return sequelize.query(
-          `UPDATE items SET cartId = ${cart.id} WHERE userId = ${req.session.user.id} AND cartId IS NULL`
-        );
+        return Item.assignItems(req.session.user.id, cart.id);
       })
       // redirect
       .then(() => res.redirect("/users/history"))
