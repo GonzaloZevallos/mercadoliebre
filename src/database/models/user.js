@@ -1,44 +1,53 @@
-'use strict';
+"use strict";
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
-    admin: DataTypes.TINYINT,
-    username: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    image: DataTypes.STRING,
-  });
-  User.associate = function(models) {
-    User.hasMany(
-      models.Product,
-      {
-        as: 'products',
-        foreignKey: 'userId'
-      }
-    );
+  class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
 
-    User.hasMany(
-      models.Token,
-      {
-        as: 'tokens',
-        foreignKey: 'userId'
-      }
-    );
+      // associate with products
+      this.hasMany(models.Product, {
+        foreignKey: "userId",
+        as: "products",
+      });
 
-    User.hasMany(
-      models.Cart, 
-      {
-        as: 'carts',
-        foreignKey: 'userId'
-      }
-    );
+      // associate with tokens
+      this.hasMany(models.Token, {
+        foreignKey: "userId",
+        as: "tokens",
+      });
 
-    User.hasMany(
-      models.Item,
-      {
-        as: 'sales',
-        foreignKey: 'sellerId'
-      }
-    );
-  };
+      // associate with carts
+      this.hasMany(models.Cart, {
+        foreignKey: "userId",
+        as: "carts",
+      });
+
+      // associate with items
+      this.hasMany(models.Item, {
+        foreignKey: "sellerId",
+        as: "sales",
+      });
+    }
+  }
+  User.init(
+    {
+      admin: DataTypes.TINYINT,
+      username: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
+      image: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "User",
+    }
+  );
   return User;
 };

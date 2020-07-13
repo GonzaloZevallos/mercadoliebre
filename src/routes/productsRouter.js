@@ -62,6 +62,6 @@ router.patch('/:id', sellerMiddleware, upload.single('image'), validator.editPro
 /*** DELETE ONE PRODUCT***/ 
 router.delete('/:id', sellerMiddleware, productsController.destroy); /* DELETE - Delete from DB - destroy */
 
-router.get('/categories', productsController.categories)
+router.get('/categories', productsController.categories);
 
 module.exports = router;

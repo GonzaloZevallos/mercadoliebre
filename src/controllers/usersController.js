@@ -18,10 +18,7 @@ module.exports = {
    // Profile - Profile from one user
    profile (req, res) {
       User.findByPk(req.session.user.id, {
-         include: {
-            all: true,
-            nested: true
-         }
+         include: ['sales', 'products']
       })
          .then(user => res.render('users/profile', { user }))
    },
@@ -84,9 +81,10 @@ module.exports = {
             }
          })
             .then(user => {
+               
                //Logueo al usuario
-               delete user.password;
-               req.session.user = user;
+               let _user = { ...user.dataValues };
+               req.session.user = _user;
       
                //Recuerdo al usuario si puso "Recuérdame"
                if(req.body.remember){
@@ -209,9 +207,7 @@ module.exports = {
 
       // Busco el producto que voy a agregar como Item.
       Product.findByPk(req.body.productId, {
-         include: {
-            all: true
-         }
+         include: ['user']
       })
          .then(product => {
             

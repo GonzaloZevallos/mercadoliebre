@@ -21,10 +21,9 @@ module.exports = {
             })
                .then(user => {
                   if(user){
-                     return Promise.reject('Usuario registrado')
+                     return Promise.reject('Usuario ya registrado')
                   }
                })
-
          }),
       // Email
       body('email')
@@ -34,7 +33,7 @@ module.exports = {
 
             return User.findOne({
                where: {
-                  username: value
+                  email: value
                }
             })
                .then(user => {
@@ -64,7 +63,7 @@ module.exports = {
       // Retype password
       body('retype')
          .notEmpty().withMessage('Campo obligatorio').bail()
-         .custom((value, { req }) => req.body.password == req.body.retype).withMessage('Las contraseñas no coinciden')
+         .custom((value, { req }) => req.body.password == value).withMessage('Las contraseñas no coinciden')
    ],
    login: [
       // Email
@@ -87,7 +86,6 @@ module.exports = {
                      return Promise.reject('Contraseña o email inválidos')
                   } 
                })
-
          })
    ],
    createProduct: [

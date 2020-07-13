@@ -52,7 +52,10 @@
 						</ul>
 
 						<% if(locals.user.id == product.userId){ %> 
+							<!-- Mostrar el formulario de edicion por GET -->
 							<a href="/products/<%= product.id %>/edit" class="action-button edit">EDITAR PRODUCTO</a>
+
+							<!-- Eliminar el producto -->
 							<form action="/products/<%= product.id %>?_method=DELETE" method="POST" style="display: inline-flex">
 								<button type="submit" class="action-button delete">ELIMINAR</button>
 							</form>

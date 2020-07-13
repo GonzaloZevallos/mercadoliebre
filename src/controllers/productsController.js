@@ -107,8 +107,8 @@ module.exports = {
 					_body.userId = req.session.user.id;
 					_body.categoryId = Number(req.body.category);
 					_body.brandId = Number(req.body.brand);
-					delete _body.brand;
-					delete _body.category;
+					// delete _body.brand;
+					// delete _body.category;
 
 					return Product.update(_body, {
 						where: {

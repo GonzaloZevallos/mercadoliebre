@@ -35,7 +35,6 @@ module.exports = {
 			where: {
 				name: {
 					[Op.substring]: req.query.search
-					// [Op.like]: `%${req.query.search}%`
 				}
 			},
 			limit: 12
