@@ -69,7 +69,7 @@ router.get('/:id/edit/', usersController.edit); /* GET - Form to create */
 router.delete('/:id', usersController.destroy); /* DELETE - Delete from DB */
 
 router.get('/cart', authMiddleware, usersController.cart);
-router.post('/addToCart', authMiddleware, usersController.addToCart);
+router.post('/addToCart', authMiddleware, validator.addToCart, usersController.addToCart);
 router.get('/history', authMiddleware, usersController.history);
 router.post('/shop', authMiddleware, usersController.shop);
 router.post('/deleteFromCart', authMiddleware, usersController.deleteFromCart);
