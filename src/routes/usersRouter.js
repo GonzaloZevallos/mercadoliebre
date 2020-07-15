@@ -26,7 +26,7 @@ var storage = multer.diskStorage({
 })
 
 var upload = multer({
-   storage: storage,
+   storage,
 
    // Validate image
    fileFilter: (req, file, cb) => {

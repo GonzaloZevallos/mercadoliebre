@@ -43,8 +43,6 @@ Thumbs.db
 *.config
 node_modules/
 src/jsonStyle/
-public/images/products/
 public/images/users/
-src/database_v6_clases
 .vscode/
 .env
